@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Employee = require("../models/Employee");
+const Employer = require("../models/Employer");
+const Job = require("../models/jobschema")
 
 const employeeSignup = async (req, res) => {
     const { firstname, lastname, email, phone, password } = req.body;
@@ -75,4 +77,30 @@ const employeeLogin = async (req, res) => {
     }
 };
 
-module.exports = { employeeSignup, employeeLogin };
+// fetch jobs
+const fetchJobs = async (req, res) => {
+    try {
+        const jobs = await Job.find()
+        res.status(200).json({
+            msg: "Jobs fetched successfully",
+            jobs,
+        })
+    } catch (error) {
+        res.status(500).json({ msg: "Error fetching jobs", error: error.message })
+    }
+}
+
+// fetch companies
+const fetchCompanies = async (req, res) => {
+    try {
+        const companies = await Employer.find()
+        res.status(200).json({
+            msg: "Companies fetched successfully",
+            companies
+        })
+    } catch (error) {
+        res.status(500).json({ msg: "Error fetching companies", error: error.message })
+    }
+}
+
+module.exports = { employeeSignup, employeeLogin, fetchJobs, fetchCompanies };

@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Employer = require("../models/Employer");
+const Job = require("../models/jobschema")
 
 const employerSignup = async (req, res) => {
   const { comapanyname, address, email, phone, industry, password, companySize, website, description, establishedDate } = req.body;
@@ -91,4 +92,46 @@ const employerLogin = async (req, res) => {
   }
 };
 
-module.exports = { employerSignup, employerLogin };
+
+// post job
+const postJob = async (req, res) => {
+  const { jobtitle,
+    jobtype,
+    jobcategory,
+    jobdescription,
+    jobrequirements,
+    jobresponsibilities,
+    salaryrange,
+    experiencelevel,
+    educationlevel, location, applicationdeadline } = req.body
+
+  try {
+    if (req.user.role !== "Employer") {
+      return res.status(403).json({ msg: "Access denied. Only employers can post jobs." })
+    }
+    const newJob = new Job({
+      jobtitle,
+      jobtype,
+      jobcategory,
+      jobdescription,
+      jobrequirements,
+      jobresponsibilities,
+      salaryrange,
+      experiencelevel,
+      educationlevel,
+      location,
+      applicationdeadline,
+      employerId: req.user.id,
+    })
+    await newJob.save()
+    res.status(201).json({
+      msg: "Job posted successfully",
+      job: newJob,
+    });
+  }
+  catch (error) {
+    res.status(500).json({ msg: "Error posting job", error: error.message });
+  }
+}
+
+module.exports = { employerSignup, employerLogin, postJob };
