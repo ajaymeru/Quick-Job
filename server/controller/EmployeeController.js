@@ -103,4 +103,28 @@ const fetchCompanies = async (req, res) => {
     }
 }
 
-module.exports = { employeeSignup, employeeLogin, fetchJobs, fetchCompanies };
+const fetchoneJOb = async (req, res) => {
+    try {
+        const job = await Job.findById(req.params.id)
+        if (!job) {
+            return res.status(404).json({ msg: "Job not found" });
+        }
+        res.status(200).json({ msg: "Job fetched successfully", job })
+    }
+    catch (error) {
+        res.status(500).json({ msg: "Error fetching job", error: error.message })
+    }
+}
+
+const fetchoneCompany = async (req, res)=>{
+    try {
+        const company = await Employer.findById(req.params.id)
+        if (!company) {
+            return res.status(404).json({ msg: "Company not found" });
+        }
+        res.status(200).json({ msg: "Company fetched successfully", company })
+    }catch(error){
+        res.status(500).json({ msg: "Error fetching company", error: error.message })
+    }
+}
+module.exports = { employeeSignup, employeeLogin, fetchJobs, fetchCompanies, fetchoneJOb, fetchoneCompany };

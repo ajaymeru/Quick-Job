@@ -9,6 +9,8 @@ import Findjobs from "./Pages/Employee/Findjobs.jsx"
 import FindCompanies from "./Pages/Employee/FindCompanies.jsx"
 import Signup from "./Verification/Signup.jsx";
 import Login from "./Verification/Login.jsx";
+import FindOneJob from './Pages/Employee/FindOneJob.jsx';
+import FindOneComapny from './Pages/Employee/FindOneComapny.jsx';
 
 function App() {
   const token = localStorage.getItem("token");
@@ -42,8 +44,10 @@ function App() {
               <Route path="/employee" element={<Employee />} />
               <Route path="/" element={<Navigate to="/employee" />} />
               <Route path="*" element={<Navigate to="/employee" />} />
-              <Route path="/jobs" element={<Findjobs/> } />
-              <Route path="/companies" element={<FindCompanies/> } />
+              <Route path="/jobs" element={<Findjobs />} />
+              <Route path="/job/:id" element={<FindOneJob />} />
+              <Route path="/companies" element={<FindCompanies />} />
+              <Route path="/company/:id" element={<FindOneComapny />} />
             </>
           )}
 

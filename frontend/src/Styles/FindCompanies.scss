@@ -1,3 +1,42 @@
-.FindCompanies{
-    
+.FindCompanies {
+    display: flex;
+    flex-direction: column;
+    gap: 5vh;
+
+    .heading {
+        text-align: center;
+    }
+
+    .search {
+        display: flex;
+        gap: 2vh;
+
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 1vh;
+        }
+        .companies {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 250px);
+            gap: 10px;
+            justify-content: center;
+
+            @media (max-width:1240px) {
+                grid-template-columns: repeat(3, 300px);
+            }
+            @media (max-width:1000px) {
+                grid-template-columns: repeat(2, 300px);
+            }
+            @media (max-width:800px) {
+                grid-template-columns: repeat(2, 250px);
+            }
+            @media (max-width:600px) {
+                grid-template-columns: repeat(1, 250px);
+            }
+
+            .companyCard {}
+        }
+    }
 }

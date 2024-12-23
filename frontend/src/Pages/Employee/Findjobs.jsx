@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "../../Styles/Findjobs.scss";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Findjobs = () => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -12,6 +13,7 @@ const Findjobs = () => {
   const [city, setCity] = useState('');
   const [remote, setRemote] = useState('');
   const [experienceLevel, setExperienceLevel] = useState('');
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -63,6 +65,10 @@ const Findjobs = () => {
     applyFilters();
   }, [searchKeyword, jobType, city, remote, experienceLevel, jobs]);
 
+  const handlejobcardclick  = (id)=>{
+    navigate(`/job/${id}`)
+  }
+
   return (
     <div className="Findjobs">
       <div className="heading">
@@ -113,7 +119,7 @@ const Findjobs = () => {
         <div className="jobs">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => (
-              <div className="jobcard" key={job._id}>
+              <div className="jobcard" key={job._id} onClick={() => handlejobcardclick(job._id)}>
                 <h2>{job.jobtitle}</h2>
                 <p><strong>Category:</strong> {job.jobcategory}</p>
                 <p><strong>Description:</strong> {job.jobdescription}</p>

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "../../Styles/FindCompanies.scss";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const FindCompanies = () => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-
+  const navigate  = useNavigate();
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [filters, setFilters] = useState({
@@ -70,6 +71,10 @@ const FindCompanies = () => {
     applyFilters();
   }, [filters, companies]);
 
+  const handlecompanycardclick = (id)=>{
+    navigate(`/company/${id}`)
+  }
+
   return (
     <div className="FindCompanies">
       <div className="heading">
@@ -112,7 +117,7 @@ const FindCompanies = () => {
         <div className="companies">
           {filteredCompanies.length > 0 ? (
             filteredCompanies.map((company) => (
-              <div key={company._id} className="companyCard">
+              <div key={company._id} className="companyCard" onClick={()=> handlecompanycardclick(company._id)}>
                 <h3>{company.comapanyname}</h3>
                 <p>
                   <strong>Email:</strong> {company.email}

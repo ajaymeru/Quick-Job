@@ -49,6 +49,10 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
+      <div className="hamburger" onClick={toggleMenu} aria-label="Toggle navigation menu" role="button">
+        <h3>☰</h3>
+      </div>
+
       <div className="logo">
         <img src="logobg.png" alt="Quick Job Logo" />
         <div className="logo-title">
@@ -70,15 +74,13 @@ const Navbar = () => {
         <Link to="/#prehome-register" onClick={handleregisterclick}>Register</Link>
       </div>
 
-      <div className="hamburger" onClick={toggleMenu} aria-label="Toggle navigation menu" role="button">
-        <h3>☰</h3>
-      </div>
-
       {isMenuOpen && (
         <div className="hamburger-list">
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-          <Link to="/contact">Contact</Link>
+          {links.map((link) => (
+            <Link key={link.path} to={link.path}>
+              {link.label}
+            </Link>
+          ))}
           <Link to="/login" style={{ display: role === 'employee' ? 'none' : 'block' }}>Login</Link>
           <Link to="/#prehome-register" style={{ display: role === 'employee' ? 'none' : 'block' }} onClick={handleregisterclick}>Register</Link>
         </div>
