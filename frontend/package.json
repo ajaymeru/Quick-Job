@@ -12,14 +12,18 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
     "@fortawesome/free-brands-svg-icons": "^6.7.1",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "axios": "^1.7.9",
+    "country-state-city": "^3.2.1",
+    "hamburger-react": "^2.5.2",
     "jsonwebtoken": "^9.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.0.1",
+    "react-select": "^5.9.0",
     "react-slick": "^0.30.2",
     "sass": "^1.81.0",
     "slick-carousel": "^1.8.1"

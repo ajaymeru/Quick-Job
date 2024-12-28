@@ -39,6 +39,7 @@ const Login = () => {
             localStorage.setItem("token", response.data.token)
 
             navigate(formData.role === "employee" ? "/employee" : "/employer");
+            window.location.reload();
         } catch (error) {
             console.error(error);
             alert("Login failed. Please check your credentials.");

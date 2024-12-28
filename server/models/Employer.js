@@ -2,11 +2,7 @@ const mongoose = require("mongoose");
 
 const EmployerSchema = new mongoose.Schema(
   {
-    comapanyname: {
-      type: String,
-      required: true,
-    },
-    address: {
+    companyname: {
       type: String,
       required: true,
     },
@@ -15,37 +11,64 @@ const EmployerSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    phone: {
-      type: String,
-      required: true,
-    },
-    industry: {
-      type: String,
-      required: true,
-    },
-    companySize: {
-      type: String, // Example: "1-10", "11-50", "51-200", etc.
-      required: false,
-    },
     website: {
       type: String,
-      required: false,
-    },
-    role: {
-      type: String,
-      default: "Employer",
-    },
-    description: {
-      type: String, 
       required: false,
     },
     establishedDate: {
       type: Date,
       required: false,
     },
-    password:{
-        type:String,
-        required:true
+    industry: {
+      type: String,
+      // required: true,
+    },
+    companySize: {
+      type: String,
+      required: false,
+    },
+    description: {
+      type: String,
+      required: false,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+    },
+    city:{
+      type: String,
+      // required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+
+    linkedin: {
+      type: String,
+      required: false,
+    },
+    facebook: {
+      type: String,
+      required: false,
+    },
+    twitter: {
+      type: String,
+      required: false,
+    },
+    instagram: {
+      type: String,
+      required: false,
+    },
+   
+    role: {
+      type: String,
+      default: "Employer",
+    },
+    password: {
+      type: String,
+      required: true
     }
   },
   { timestamps: true }

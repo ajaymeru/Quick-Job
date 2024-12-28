@@ -1,0 +1,45 @@
+.EmployerSidebar {
+    background-color: #f8f9fa;
+    height: 100vh;
+    overflow: hidden;
+    transition: width 0.3s ease;
+    z-index: 1000;
+    
+    &.collapsed {
+      width: 80px;
+    }
+  
+    &.expanded {
+      width: 250px;
+    }
+  
+    .companylogo {
+      text-align: center;
+      margin: 10px 0;
+    }
+  
+    .menuitems {
+      .menuitem {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        transition: all 0.3s ease;
+  
+        .icon {
+          font-size: 20px;
+          margin-right: 10px;
+        }
+  
+        .text {
+          display: inline-block;
+          transition: opacity 0.3s ease;
+        }
+  
+        &.active {
+          background-color: #007bff;
+          color: white;
+        }
+      }
+    }
+  }
+  

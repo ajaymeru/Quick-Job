@@ -26,6 +26,14 @@ const EmployeeSchema = new mongoose.Schema({
         type: String,
         default: "Employee",
     },
+    savejobs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job",
+    }],
+    followingEmployer: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employer",
+    }],
 }, { timestamps: true });
 
 module.exports = mongoose.model("Employee", EmployeeSchema);

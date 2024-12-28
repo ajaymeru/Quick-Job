@@ -53,9 +53,9 @@ function App() {
 
           {token && role === "employer" && (
             <>
-              <Route path="/employer" element={<Employer />} />
-              <Route path="/" element={<Navigate to="/employer" />} />
-              <Route path="*" element={<Navigate to="/employer" />} />
+              <Route path="/employer/*" element={<Employer />} /> 
+              <Route path="/*" element={<Navigate to="/employer/statistics" />} /> 
+              <Route path="*" element={<Navigate to="/employer" />} /> 
             </>
           )}
         </Routes>

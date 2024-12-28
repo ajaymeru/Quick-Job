@@ -1,0 +1,110 @@
+.MyJobPosts {
+    padding: 20px;
+  
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: #333;
+      text-align: center;
+    }
+  
+    .job-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+  
+      th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+  
+      th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+        color: #555;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+      }
+  
+      td {
+        font-size: 0.9rem;
+        color: #333;
+  
+        &:nth-child(5) {
+          font-weight: bold;
+          color: #e63946; // Highlight deadline in red
+        }
+      }
+  
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+  
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+    }
+  
+    .see-applicants-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+  
+      &:hover {
+        background-color: #0056b3;
+      }
+  
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 4px #0056b3;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .job-table {
+        font-size: 0.8rem;
+  
+        th, td {
+          padding: 8px;
+        }
+      }
+  
+      .see-applicants-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
+    }
+
+    .delete-job-btn {
+        background-color: #e63946;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        margin-left: 10px;
+      
+        &:hover {
+          background-color: #c53030;
+        }
+      
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 4px #e63946;
+        }
+      }
+      
+  }
+  

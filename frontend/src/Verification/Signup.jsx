@@ -15,12 +15,10 @@ const Signup = () => {
     phone: "",
     password: "",
     ...(role === "employer" && {
-      comapanyname: "",
+      companyname: "",
       address: "",
-      industry: "",
       companySize: "",
       website: "",
-      description: "",
       establishedDate: "",
     }),
   });
@@ -46,6 +44,7 @@ const Signup = () => {
       alert(`${role === "employee" ? "Employee" : "Employer"} registered successfully!`);
 
       navigate(role === "employee" ? "/employee" : "/employer");
+      window.location.reload();
     } catch (error) {
       console.error(error);
       alert("Registration failed. Please try again.");
@@ -105,9 +104,9 @@ const Signup = () => {
           <>
             <input
               type="text"
-              name="comapanyname"
+              name="companyname"
               placeholder="Company Name"
-              value={formData.comapanyname}
+              value={formData.companyname}
               onChange={handleChange}
               required
             />
@@ -119,14 +118,7 @@ const Signup = () => {
               onChange={handleChange}
               required
             />
-            <input
-              type="text"
-              name="industry"
-              placeholder="Industry"
-              value={formData.industry}
-              onChange={handleChange}
-              required
-            />
+            
             <input
               type="text"
               name="companySize"
@@ -141,12 +133,6 @@ const Signup = () => {
               value={formData.website}
               onChange={handleChange}
             />
-            <textarea
-              name="description"
-              placeholder="Company Description"
-              value={formData.description}
-              onChange={handleChange}
-            ></textarea>
             <input
               type="date"
               name="establishedDate"

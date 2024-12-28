@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import "../../Styles/FindCompanies.scss";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 const FindCompanies = () => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [filters, setFilters] = useState({
@@ -13,13 +15,14 @@ const FindCompanies = () => {
     location: "",
     industry: "",
   });
+  const [followCompanies, setFollowCompanies] = useState([]);
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.log("No token found");
+          console.error("No token found");
           return;
         }
 
@@ -30,18 +33,37 @@ const FindCompanies = () => {
         });
 
         const fetchedCompanies = response.data.companies;
-        console.log(fetchedCompanies);
         setCompanies(fetchedCompanies);
-        setFilteredCompanies(fetchedCompanies); // Initialize filtered companies
+        setFilteredCompanies(fetchedCompanies);
       } catch (error) {
-        console.error("Error in fetching companies", error);
+        console.error("Error fetching companies:", error);
+      }
+    };
+
+    const fetchEmployeeDetails = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+
+        const response = await axios.get(`${SERVER_URL}api/employee/mydetails`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const employee = response.data.employee;
+        setFollowCompanies(employee.followingEmployer || []);
+      } catch (error) {
+        console.error("Error fetching employee details:", error);
       }
     };
 
     fetchCompanies();
+    fetchEmployeeDetails();
   }, [SERVER_URL]);
 
-  // Handle filter changes
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
@@ -50,7 +72,6 @@ const FindCompanies = () => {
     }));
   };
 
-  // Apply filters
   useEffect(() => {
     const applyFilters = () => {
       const filtered = companies.filter((company) => {
@@ -71,9 +92,32 @@ const FindCompanies = () => {
     applyFilters();
   }, [filters, companies]);
 
-  const handlecompanycardclick = (id)=>{
-    navigate(`/company/${id}`)
-  }
+  const handleCompanyCardClick = (id) => {
+    navigate(`/company/${id}`);
+  };
+
+  const toggleFollowCompany = async (companyId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      const response = await axios.post(
+        `${SERVER_URL}api/employee/toggle-follow/${companyId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const updatedFollowingCompanies = response.data.followingCompanies;
+      setFollowCompanies(updatedFollowingCompanies);
+    } catch (error) {
+      console.error("Error toggling follow for company:", error);
+    }
+  };
 
   return (
     <div className="FindCompanies">
@@ -117,7 +161,7 @@ const FindCompanies = () => {
         <div className="companies">
           {filteredCompanies.length > 0 ? (
             filteredCompanies.map((company) => (
-              <div key={company._id} className="companyCard" onClick={()=> handlecompanycardclick(company._id)}>
+              <div key={company._id} className="companyCard">
                 <h3>{company.comapanyname}</h3>
                 <p>
                   <strong>Email:</strong> {company.email}
@@ -137,6 +181,15 @@ const FindCompanies = () => {
                     {company.website}
                   </a>
                 </p>
+                <div>
+                  <button onClick={() => handleCompanyCardClick(company._id)}>
+                    View
+                  </button>
+                  <button onClick={() => toggleFollowCompany(company._id)}>
+                    <FontAwesomeIcon icon={followCompanies.includes(company._id) ? "" : faPlus} />{" "}
+                    {followCompanies.includes(company._id) ? "Unfollow" : "Follow"}
+                  </button>
+                </div>
               </div>
             ))
           ) : (
