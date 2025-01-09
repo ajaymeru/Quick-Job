@@ -21,7 +21,6 @@ const EmployerSchema = new mongoose.Schema(
     },
     industry: {
       type: String,
-      // required: true,
     },
     companySize: {
       type: String,
@@ -38,7 +37,6 @@ const EmployerSchema = new mongoose.Schema(
     },
     city:{
       type: String,
-      // required: true,
     },
     address: {
       type: String,
@@ -69,7 +67,22 @@ const EmployerSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true
-    }
+    },
+    profileImage:{
+      type: String,
+      required: false
+    },
+    otp: {
+      type: String,
+  },
+  otpExpires: {
+      type: Date,
+  },
+  isotpVerified: {
+      type: Boolean,
+      default: false,
+  },
+  
   },
   { timestamps: true }
 );

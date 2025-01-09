@@ -1,3 +1,276 @@
-.FindOneComapny{
-    
+.FindOneComapny {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    padding: 2vh 2vw;
+
+    .company-jobs {
+        display: flex;
+        flex-direction: column;
+        gap: 2vh;
+
+
+
+        .company-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3vh;
+
+
+            .company-main-info {
+                display: flex;
+                justify-content: space-between;
+                padding: 1vh 2vw;
+                align-items: center;
+
+                .logo-types {
+                    display: flex;
+                    gap: 2vw;
+                    align-items: center;
+
+                    img {
+                        width: 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        padding: 10px;
+                        border: 1px solid grey;
+                        background-color: whitesmoke;
+                    }
+
+                    .company-name {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 1vh;
+
+                        h3 {
+                            font-size: 2rem;
+
+                            @media (max-width:600px) {
+                                font-size: 1rem;
+                            }
+                        }
+
+                        p {
+                            font-size: 1.5rem;
+
+                            @media (max-width:600px) {
+                                font-size: 0.8rem;
+                            }
+                        }
+                    }
+
+                }
+
+                .follow-count {
+                    display: flex;
+                    flex-direction: column;
+
+                    button {
+                        padding: 2vh 2vw;
+                        border: none;
+                        border-radius: 10px;
+                        font-size: large;
+                        cursor: pointer;
+
+                        @media (max-width:600px) {
+                            font-size: small;
+                            padding: 1.5vh 1.5vw;
+                        }
+                    }
+                }
+            }
+
+            .company-description {
+                padding: 1vh 2vw;
+                border: 1px solid grey;
+                border-radius: 10px;
+
+                p {
+                    font-size: large;
+                }
+            }
+
+            .about-company {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5vh;
+
+                .info {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 1vw;
+                    padding: 1vh 2vw;
+
+                    @media (max-width:500px) {
+                        flex-direction: column;
+                        gap: 1vh;
+                    }
+
+                    p {
+                        font-size: large;
+                        flex: 1 1 40%;
+                    }
+                }
+            }
+
+            .contact-company {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5vh;
+
+                .location-info {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5vh;
+
+                    .info {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 1vw;
+                        padding: 1vh 2vw;
+
+                        @media (max-width:500px) {
+                            flex-direction: column;
+                            gap: 1vh;
+                        }
+
+                        p {
+                            font-size: large;
+                            flex: 1 1 40%;
+                        }
+                    }
+
+                }
+
+                .social-media {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5vh;
+
+                    .info {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 2vw;
+                        padding: 1vh 2vw;
+                    }
+                }
+            }
+        }
+
+        .jobs-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+            padding: 2vh;
+
+            .heading {}
+
+            .jobs {
+                flex: 1;
+                display: grid;
+                grid-template-columns: repeat(4, 300px);
+                column-gap: 3vh;
+                row-gap: 1vh;
+                justify-content: center;
+
+                @media (max-width:1240px) {
+                    grid-template-columns: repeat(3, 300px);
+                }
+
+                @media (max-width:1000px) {
+                    grid-template-columns: repeat(2, 300px);
+                }
+
+                @media (max-width:800px) {
+                    grid-template-columns: repeat(2, 300px);
+                }
+
+                @media (max-width:600px) {
+                    grid-template-columns: repeat(1, 300px);
+                }
+
+                .jobcard {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1vh;
+                    border: 1PX solid grey;
+                    padding: 2vh;
+                    border-radius: 10px;
+
+                    .jobcardtop {
+                        display: flex;
+                        justify-content: space-between;
+
+                        .company-info {
+                            img {
+                                width: 50px;
+                                height: 50px;
+                                border-radius: 10px;
+                            }
+
+                            h2 {
+                                font-size: 15px;
+                            }
+                        }
+
+                        .links-info {
+                            display: flex;
+                            gap: 1vh;
+                            align-items: center;
+                            height: fit-content;
+
+                            button {
+                                padding: 10px;
+                                background-color: #4CAF50;
+                                color: white;
+                                border: none;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                height: fit-content;
+                            }
+
+                        }
+
+
+                    }
+
+                    .jobcardbottom {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 2vh;
+
+                        h2 {
+                            font-size: 20px;
+                        }
+
+                        .job-info {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 10px;
+
+                            p {
+                                background-color: dodgerblue;
+                                border-radius: 5px;
+                                padding: 2px 5px;
+                                color: white;
+                                font-size: 15px;
+                                font-weight: 600;
+                                display: flex;
+                                align-items: center;
+
+                                img {
+                                    width: 15px;
+                                    margin-right: 5px;
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+
+
 }

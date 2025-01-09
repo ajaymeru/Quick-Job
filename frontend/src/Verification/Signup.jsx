@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../Styles/Signup.scss";
+import OTPPopup from "./OTPPopup";
 
 const Signup = () => {
   const location = useLocation();
@@ -23,6 +24,11 @@ const Signup = () => {
     }),
   });
 
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [userId, setUserId] = useState("");
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -43,11 +49,29 @@ const Signup = () => {
       const response = await axios.post(endpoint, formData);
       alert(`${role === "employee" ? "Employee" : "Employer"} registered successfully!`);
 
-      navigate(role === "employee" ? "/employee" : "/employer");
-      window.location.reload();
+      // navigate(role === "employee" ? "/employee" : "/employer");
+      // window.location.reload();
+      setUserId(response.data.employee?.id || response.data.employer?.id);
+      setIsPopupVisible(true);
     } catch (error) {
       console.error(error);
       alert("Registration failed. Please try again.");
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    const endpoint =
+      role === "employee"
+        ? "http://localhost:5000/api/employee/verify-otp"
+        : "http://localhost:5000/api/employer/verify-otp";
+    try {
+      const response = await axios.post(endpoint, { id: userId, otp });
+      alert("OTP verified successfully!");
+      setIsPopupVisible(false);
+      navigate(role === "employee" ? "/employee" : "/employer");
+    } catch (error) {
+      console.error(error);
+      alert("OTP verification failed. Please try again.");
     }
   };
 
@@ -118,7 +142,7 @@ const Signup = () => {
               onChange={handleChange}
               required
             />
-            
+
             <input
               type="text"
               name="companySize"
@@ -144,6 +168,13 @@ const Signup = () => {
         )}
         <button type="submit">Register</button>
       </form>
+      <OTPPopup
+        isVisible={isPopupVisible}
+        otp={otp}
+        setOtp={setOtp}
+        onVerify={handleVerifyOTP}
+        onClose={() => setIsPopupVisible(false)}
+      />
     </div>
   );
 };

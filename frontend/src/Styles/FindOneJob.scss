@@ -1,14 +1,245 @@
 .FindOneJob {
-    .applied-btn {
-        background-color: gray;
-        color: white;
-        cursor: not-allowed;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    padding: 2vh 2vw;
+
+    .comapany-job {
+        display: flex;
+        gap: 5vh;
+
+        @media (max-width:700px) {
+            flex-direction: column;
+        }
+
+
+        .company {
+            padding: 2vh;
+            border: 1px solid grey;
+            height: fit-content;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+            min-width: 300px;
+
+            .company-info {
+                display: flex;
+                flex-direction: column;
+                gap: 1vh;
+
+                @media (max-width:700px) {
+                    flex-direction: row;
+                    gap: 5vw;
+                }
+
+                img {
+                    padding: 2vh;
+                    border-radius: 50%;
+                    width: 100px;
+                    height: 100px;
+                    border: 1px solid grey;
+                }
+
+                .name-info {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1vh;
+
+                    h3 {
+                        color: blue;
+                        font-size: 20px;
+                    }
+
+                    a {}
+
+                    .location-industry {
+                        display: flex;
+                        gap: 1vh;
+                        flex-wrap: wrap;
+
+                        p {
+                            color: #000;
+                            border: 1px solid gray;
+                            padding: 1px 3px;
+                            border-radius: 5px;
+                            font-size: smaller;
+                        }
+                    }
+                }
+            }
+
+            p {
+                color: grey;
+            }
+        }
+
+        .job {
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+
+            h1 {
+                color: blue;
+                font-size: 30px;
+            }
+
+            .job-information {
+                display: flex;
+                gap: 2vh;
+                flex-wrap: wrap;
+
+                .group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1vh;
+                    border: 1px solid grey;
+                    padding: 5px 10px;
+                    border-radius: 10px;
+
+                    h4 {
+                        color: #007bff;
+                    }
+                }
+            }
+
+            .job-information2 {
+                display: flex;
+                gap: 2vh;
+                flex-direction: column;
+
+                .group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1vh;
+
+                    h4 {
+                        color: #007bff;
+                        font-size: large;
+                    }
+
+                    ul {
+                        list-style: auto;
+                        padding: revert;
+
+                        li {
+                            padding: 5px 0;
+                        }
+                    }
+                }
+            }
+
+            .applied-btn {
+                background-color: gray;
+                color: white;
+                cursor: not-allowed;
+                padding: 10px;
+                font-size: large;
+                width: fit-content;
+                border-radius: 10px;
+            }
+
+            .apply-btn {
+                background-color: #007bff;
+                color: white;
+                cursor: pointer;
+                padding: 10px;
+                font-size: large;
+                width: fit-content;
+                border-radius: 10px;
+            }
+        }
+
     }
 
-    .apply-btn {
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
+    .related-jobs {
+        display: flex;
+        flex-direction: column;
+        gap: 2vh;
+
+        .related-job-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+
+            .related-job-card {
+                display: flex;
+                flex-direction: column;
+                gap: 1vh;
+                width: 300px;
+                border: 1px solid grey;
+                padding: 2vh;
+                border-radius: 10px;
+
+                .jobcardtop {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .company-info {
+                        img {
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 10px;
+                        }
+
+                        h2 {
+                            font-size: 15px;
+                        }
+                    }
+
+                    .links-info {
+                        display: flex;
+                        gap: 1vh;
+                        align-items: center;
+                        height: fit-content;
+
+                        button {
+                            padding: 10px;
+                            background-color: #4CAF50;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            height: fit-content;
+                        }
+                    }
+                }
+
+                .jobcardbottom {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2vh;
+
+                    h2 {
+                        font-size: 20px;
+                    }
+
+                    .job-info {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px;
+
+                        p {
+                            background-color: dodgerblue;
+                            border-radius: 5px;
+                            padding: 2px 5px;
+                            color: white;
+                            font-size: 15px;
+                            font-weight: 600;
+                            display: flex;
+                            align-items: center;
+
+                            img {
+                                width: 15px;
+                                margin-right: 5px;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
     }
 
     .popup {

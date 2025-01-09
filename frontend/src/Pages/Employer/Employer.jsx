@@ -9,6 +9,8 @@ import MyJobPosts from './MyJobPosts';
 import EmployerProfile from './EmployerProfile';
 import ApplicantsByJob from './ApplicantsByJob';
 import EditJobDetails from './EditJobDetails.JSX';
+import Candidate from './Candidate';
+import SearchCandidates from './SearchCandidates';
 
 const Employer = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -29,6 +31,8 @@ const Employer = () => {
             <Route path='/profile' element={<EmployerProfile />} />
             <Route path='/applicantsbyjob/:jobId' element={<ApplicantsByJob />} />
             <Route path='/editjob/:id' element={<EditJobDetails />} />
+            <Route path='/candidate/:id' element={<Candidate />} />
+            <Route path='/employees' element={<SearchCandidates/>} />
           </Routes>
         </div>
       </div>

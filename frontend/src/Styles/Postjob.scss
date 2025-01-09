@@ -82,6 +82,15 @@
 
     }
   }
+  button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
 
 }
 
@@ -101,14 +110,6 @@ textarea {
   border-radius: 5px;
 }
 
-button {
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
 
 button:disabled {
   background-color: #ddd;

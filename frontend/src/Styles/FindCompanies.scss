@@ -16,27 +16,95 @@
             flex-direction: column;
             gap: 1vh;
         }
+
         .companies {
             flex: 1;
             display: grid;
-            grid-template-columns: repeat(4, 250px);
+            grid-template-columns: repeat(4, 300px);
             gap: 10px;
             justify-content: center;
 
             @media (max-width:1240px) {
                 grid-template-columns: repeat(3, 300px);
             }
+
             @media (max-width:1000px) {
                 grid-template-columns: repeat(2, 300px);
             }
+
             @media (max-width:800px) {
                 grid-template-columns: repeat(2, 250px);
             }
+
             @media (max-width:600px) {
                 grid-template-columns: repeat(1, 250px);
             }
 
-            .companyCard {}
+            .companyCard {
+                display: flex;
+                gap: 1vh;
+                justify-content: space-between;
+                align-items: center ;
+                padding: 2vh;
+                border-radius: 20px;
+                background-color: beige;
+
+                .logo {
+                    display: flex;
+                    gap: 2vh;
+
+                    img {
+                        width: 50px;
+                        height: 50px;
+                    }
+
+                    .company-info {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.5vh;
+                        align-items: flex-start;
+
+                        h3 {
+                            font-size: 18px;
+                        }
+
+                        button {
+                            width: fit-content;
+                            height: fit-content;
+                            padding: 1px 5px;
+                            border-radius: 5px;
+                            font-size: 13px;
+                            border: none;
+                        }
+
+                        .industry-location {
+                            display: flex;
+                            gap: 0.5vh;
+                            flex-wrap: wrap;
+
+                            p {
+                                border: 1px solid grey;
+                                background-color: azure;
+                                padding: 1px 5px;
+                                font-size: 10px;
+                                border-radius: 5px;
+                            }
+                        }
+
+                    }
+                }
+
+
+
+                button {
+                    border: none;
+                    font-size: 20px;
+                    background-color: transparent;
+                    height: fit-content;
+                    width: fit-content;
+                }
+
+            }
         }
     }
 }

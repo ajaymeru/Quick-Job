@@ -2,6 +2,92 @@ import React, { useState, useEffect } from 'react';
 import "../../Styles/EmployerProfile.scss";
 import axios from 'axios';
 
+const industry = [
+    "IT Services & Consulting",
+    "Software Product",
+    "Internet",
+    "Electronics Manufacturing",
+    "Electronic Components / Semiconductors",
+    "Hardware & Networking",
+    "Emerging Technologies",
+    "Medical Services / Hospital",
+    "Pharmaceutical & Life Sciences",
+    "Medical Devices & Equipment",
+    "Biotechnology",
+    "Clinical Research / Contract Research",
+    "Industrial Equipment / Machinery",
+    "Auto Components",
+    "Chemicals",
+    "Automobile",
+    "Electrical Equipment",
+    "Building Material",
+    "Industrial Automation",
+    "Iron & Steel",
+    "Metals & Mining",
+    "Packaging & Containers",
+    "Petrochemical / Plastics / Rubber",
+    "Defence & Aerospace",
+    "Fertilizers / Pesticides / Agro chemicals",
+    "Pulp & Paper",
+    "Education / Training",
+    "E-Learning / EdTech",
+    "Engineering & Construction",
+    "Real Estate",
+    "Courier / Logistics",
+    "Power",
+    "Oil & Gas",
+    "Water Treatment / Waste Management",
+    "Aviation",
+    "Ports & Shipping",
+    "Urban Transport",
+    "Railways",
+    "Financial Services",
+    "FinTech / Payments",
+    "Insurance",
+    "NBFC",
+    "Banking",
+    "Investment Banking / Venture Capital / Private Equity",
+    "Recruitment / Staffing",
+    "Management Consulting",
+    "Accounting / Auditing",
+    "Facility Management Services",
+    "Architecture / Interior Design",
+    "Legal",
+    "Design",
+    "Law Enforcement / Security Services",
+    "Content Development / Language",
+    "Advertising & Marketing",
+    "Telecom / ISP",
+    "Printing & Publishing",
+    "Film / Music / Entertainment",
+    "Gaming",
+    "TV / Radio",
+    "Animation & VFX",
+    "Events / Live Entertainment",
+    "Sports / Leisure & Recreation",
+    "BPO / Call Centre",
+    "Analytics / KPO / Research",
+    "Textile & Apparel",
+    "Retail",
+    "Consumer Electronics & Appliances",
+    "Food Processing",
+    "FMCG",
+    "Hotels & Restaurants",
+    "Travel & Tourism",
+    "Furniture & Furnishing",
+    "Beauty & Personal Care",
+    "Fitness & Wellness",
+    "Gems & Jewellery",
+    "Beverage",
+    "Leather",
+    "NGO / Social Services / Industry Associations",
+    "Agriculture / Forestry / Fishing",
+    "Import & Export",
+    "Miscellaneous",
+    "Government / Public Administration"
+];
+
+
 const EmployerProfile = () => {
     const SERVER_URL = import.meta.env.VITE_SERVER_URL;
     const [user, setUser] = useState({});
@@ -9,6 +95,7 @@ const EmployerProfile = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [cities, setCities] = useState([]);
     const [message, setMessage] = useState('');
+    const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
         const fetchMyDetails = async () => {
@@ -62,6 +149,13 @@ const EmployerProfile = () => {
         setUser({ ...user, [name]: value });
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileImage(file);
+        }
+    };
+
     const handleEditSave = async () => {
         if (isEditing) {
             try {
@@ -71,9 +165,33 @@ const EmployerProfile = () => {
                     return;
                 }
 
-                const response = await axios.put(`${SERVER_URL}api/employer/editmydetails`, user, {
+                // Create a new FormData object to handle form data including the image
+                const formData = new FormData();
+                // Append other form data
+                formData.append("companyname", user.companyname);
+                formData.append("email", user.email);
+                formData.append("website", user.website);
+                formData.append("establishedDate", user.establishedDate);
+                formData.append("industry", user.industry);
+                formData.append("companySize", user.companySize);
+                formData.append("description", user.description);
+                formData.append("phone", user.phone);
+                formData.append("address", user.address);
+                formData.append("city", user.city);
+                formData.append("facebook", user.facebook);
+                formData.append("twitter", user.twitter);
+                formData.append("linkedin", user.linkedin);
+                formData.append("instagram", user.instagram);
+
+                // Append the image file if it exists
+                if (profileImage) {
+                    formData.append("profileImage", profileImage);
+                }
+
+                const response = await axios.put(`${SERVER_URL}api/employer/editmydetails`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data", // Important for file uploads
                     },
                 });
                 alert("Profile updated successfully!");
@@ -83,6 +201,7 @@ const EmployerProfile = () => {
         }
         setIsEditing(!isEditing);
     };
+
 
     if (loading) {
         return <div>Loading...</div>;
@@ -109,12 +228,12 @@ const EmployerProfile = () => {
                         />
                     </div>
                     <div className="group">
-                        <label htmlFor="">Your Email</label>
+                        <label htmlFor="profileImage">profileImage</label>
                         <input
-                            type="email"
-                            name="email"
-                            value={user.email || ""}
-                            onChange={handleInputChange}
+                            type="file"
+                            name="profileImage" id=""
+                            accept="image/*"
+                            onChange={(e) => handleImageChange(e)}
                             disabled={!isEditing}
                         />
                     </div>
@@ -140,13 +259,17 @@ const EmployerProfile = () => {
                     </div>
                     <div className="group">
                         <label htmlFor="">Industry</label>
-                        <input
-                            type="text"
+                        <select
                             name="industry"
                             value={user.industry || ""}
                             onChange={handleInputChange}
                             disabled={!isEditing}
-                        />
+                        >
+                            <option value="">Select Industry</option>
+                            {industry.map((industry, index) => (
+                                <option key={index} value={industry}>{industry}</option>
+                            ))}
+                        </select>
                     </div>
                     <div className="group">
                         <label htmlFor="">Company Size</label>

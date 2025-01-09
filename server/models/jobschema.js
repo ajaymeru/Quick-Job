@@ -38,16 +38,16 @@ const JobSchema = new mongoose.Schema({
         required: true
     },
     jobresponsibilities: {
-        type: [String], 
+        type: [String],
         // required: true
     },
-    
-    
+
+
     preferredqualifications: {
-        type: [String], 
+        type: [String],
         // required: true
     },
-    
+
     employerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Employer",
@@ -57,10 +57,26 @@ const JobSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-   
+
     applicants: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Employee"
+    }],
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee"
+    }],
+    shortlisted: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee"
+    }],
+    selected: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee",
+    }],
+    rejected: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee",
     }]
 },
     { timestamps: true }

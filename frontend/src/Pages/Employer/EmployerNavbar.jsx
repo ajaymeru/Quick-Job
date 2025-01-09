@@ -44,7 +44,7 @@ const EmployerNavbar = ({ toggleSidebar, isSidebarOpen }) => {
         <Hamburger toggled={isSidebarOpen} toggle={toggleSidebar} size={24} />
       </div>
 
-      <p>Welcome {user.comapanyname } </p>
+      <p>Welcome {user.companyname } </p>
 
       <button onClick={logout}>Logout</button>
     </div>

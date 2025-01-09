@@ -11,8 +11,12 @@ import Signup from "./Verification/Signup.jsx";
 import Login from "./Verification/Login.jsx";
 import FindOneJob from './Pages/Employee/FindOneJob.jsx';
 import FindOneComapny from './Pages/Employee/FindOneComapny.jsx';
+import EmployeeDashboard from './Pages/Employee/EmployeeDashboard.jsx';
+import { getTokenAndRole } from './utils/authUtils.jsx';
+import CvBuilder from './Pages/Employee/CvBuilder.jsx';
 
 function App() {
+  // const { token, role } = getTokenAndRole();
   const token = localStorage.getItem("token");
   let role = null;
 
@@ -39,23 +43,24 @@ function App() {
               <Route path="*" element={<Navigate to="/" />} />
             </>
           )}
+
           {token && role === "employee" && (
             <>
-              <Route path="/employee" element={<Employee />} />
               <Route path="/" element={<Navigate to="/employee" />} />
-              <Route path="*" element={<Navigate to="/employee" />} />
+              <Route path="/employee" element={<Employee />} />
               <Route path="/jobs" element={<Findjobs />} />
               <Route path="/job/:id" element={<FindOneJob />} />
               <Route path="/companies" element={<FindCompanies />} />
               <Route path="/company/:id" element={<FindOneComapny />} />
+              <Route path="/dashboard/*" element={<EmployeeDashboard />} />
+              <Route path="*" element={<Navigate to="/employee" />} />
             </>
           )}
 
           {token && role === "employer" && (
             <>
-              <Route path="/employer/*" element={<Employer />} /> 
-              <Route path="/*" element={<Navigate to="/employer/statistics" />} /> 
-              <Route path="*" element={<Navigate to="/employer" />} /> 
+              <Route path="/employer/*" element={<Employer />} />
+              <Route path="/*" element={<Navigate to="/employer/statistics" />} />
             </>
           )}
         </Routes>

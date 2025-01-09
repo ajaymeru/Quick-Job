@@ -1,0 +1,51 @@
+.EmployeeProfile {
+
+    .profile {
+        display: flex;
+        gap: 2vw;
+
+        .user-profile {
+            img {
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+            }
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1vh;
+
+            .group-row {
+                display: flex;
+                gap: 1vw;
+
+                input {
+                    border: none;
+                    field-sizing: content;
+                }
+            }
+
+            p {
+                font-size: 15px;
+                color: grey;
+            }
+
+            .groups{
+                display: flex;
+                .group {
+                    display: flex;
+                    gap: 1vw;
+                    align-items: center;
+    
+                    input {
+                        border: none;
+                        field-sizing: content;
+                    }
+                }
+            }
+        }
+    }
+
+}

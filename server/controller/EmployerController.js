@@ -1,10 +1,12 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Employer = require("../models/Employer");
-const Job = require("../models/jobschema")
+const Employee = require("../models/Employee")
+const Job = require("../models/jobschema");
+const { generateOTP, sendEmail } = require("../utils/email");
 
 const employerSignup = async (req, res) => {
-  const { companyname, address, email, phone,  password, companySize, website, establishedDate } = req.body;
+  const { companyname, address, email, phone, password, companySize, website, establishedDate } = req.body;
 
   try {
     // Check if employer already exists
@@ -13,6 +15,8 @@ const employerSignup = async (req, res) => {
       return res.status(400).json({ msg: "Employer already exists" });
     }
 
+    const otp = generateOTP()
+    const otpExpires = Date.now() + 10 * 60 * 1000;
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -27,10 +31,15 @@ const employerSignup = async (req, res) => {
       companySize,
       website,
       establishedDate,
+      otp,
+      otpExpires,
     });
 
     await newEmployer.save();
-    const token = jwt.sign({ id: newEmployer._id, role: newEmployer.role }, process.env.SECRET_KEY, { expiresIn: "10h" });
+
+    await sendEmail(email, "Your OTP Code", `Your OTP is ${otp}. It is valid for 10 minutes.`);
+
+    const token = jwt.sign({ id: newEmployer._id, role: newEmployer.role }, process.env.SECRET_KEY, { expiresIn: "100h" });
 
     res.status(201).json({
       msg: "Employer created successfully",
@@ -51,13 +60,26 @@ const employerLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find employer by email
     const employer = await Employer.findOne({ email });
     if (!employer) {
       return res.status(400).json({ msg: "Invalid email" });
     }
 
-    // Compare passwords
+    if (!employer.isotpVerified) {
+      const otp = generateOTP();
+      employer.otp = otp;
+      employer.otpExpires = Date.now() + 10 * 60 * 1000;
+
+      await employer.save();
+      await sendEmail(email, "Your OTP Code", `Your OTP is ${otp}. It is valid for 10 minutes.`);
+
+      return res.status(200).json({
+        msg: "OTP sent to your email. Please verify to proceed.",
+        isotpVerified: false,
+        employerId: employer._id,  // Use `employerId` for OTP verification
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, employer.password);
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid password" });
@@ -65,12 +87,12 @@ const employerLogin = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign({ id: employer._id, role: employer.role }, process.env.SECRET_KEY, {
-      expiresIn: "10h",
+      expiresIn: "100h",
     });
-
     // Respond with token and employer details
     res.json({
       token,
+      isotpVerified: true,
       employer: {
         id: employer._id,
         name: employer.name,
@@ -90,6 +112,33 @@ const employerLogin = async (req, res) => {
   }
 };
 
+const verifyOTP = async (req, res) => {
+  const { id, otp } = req.body;
+
+  try {
+    const user = await Employee.findById(id) || await Employer.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Validate OTP and expiration
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ msg: "Invalid or expired OTP" });
+    }
+
+    user.isotpVerified = true;
+    user.otp = null; // Clear OTP
+    user.otpExpires = null;
+
+    await user.save();
+
+    res.json({ msg: "OTP verified successfully." });
+  } catch (error) {
+    res.status(500).json({ msg: "Error verifying OTP", error: error.message });
+  }
+};
+
 const fetchmydetails = async (req, res) => {
   try {
     const employer = await Employer.findById(req.user.id);
@@ -100,15 +149,21 @@ const fetchmydetails = async (req, res) => {
   } catch (error) {
     res.status(500).json({ msg: "Error fetching employer details", error: error.message });
   }
-}
+};
 
 const editEmployerDetails = async (req, res) => {
-  const { companyname, address, email, phone, industry, companySize, website, description, establishedDate, city, linkedin, facebook, twitter, instagram } = req.body;
+  const { companyname, address, email, phone, industry, companySize, website, description, establishedDate, city, linkedin, facebook, twitter, instagram, profileImage } = req.body;
 
   try {
     const employer = await Employer.findById(req.user.id);
     if (!employer) {
       return res.status(404).json({ msg: "Employer not found" });
+    }
+    if (email && email !== employer.email) {
+      const existingUser = await Employer.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ msg: "Email already exists" });
+      }
     }
 
     employer.companyname = companyname || employer.companyname;
@@ -125,6 +180,7 @@ const editEmployerDetails = async (req, res) => {
     employer.facebook = facebook || employer.facebook;
     employer.twitter = twitter || employer.twitter;
     employer.instagram = instagram || employer.instagram;
+    employer.profileImage = profileImage || employer.profileImage;
 
     await employer.save();
 
@@ -172,7 +228,7 @@ const postJob = async (req, res) => {
   catch (error) {
     res.status(500).json({ msg: "Error posting job", error: error.message });
   }
-}
+};
 
 const fetchSingleJob = async (req, res) => {
   try {
@@ -314,25 +370,227 @@ const fetchapplicationsbyjob = async (req, res) => {
     }
 
     const jobId = req.params.jobId;
-    const job = await Job.findById(jobId).populate("applicants");
+    const job = await Job.findById(jobId)
+      .populate("applicants")
+      .populate("wishlist")
+      .populate("shortlisted")
+      .populate("selected")
+      .populate("rejected")
     if (!job) {
       return res.status(404).json({ msg: "Job not found" });
     }
 
-    if (!job.applicants || job.applicants.length === 0) {
-      return res.status(404).json({ msg: "No applications found for this job" });
-    }
-
-    res.status(200).json({ msg: "Applications fetched successfully", applications: job.applicants });
+    res.status(200).json({
+      msg: "Applications fetched successfully",
+      applications: {
+        applicants: job.applicants,
+        wishlist: job.wishlist,
+        shortlisted: job.shortlisted,
+        selected: job.selected,
+        rejected: job.rejected,
+      }
+    });
   } catch (error) {
     res.status(500).json({ msg: "Error fetching applications", error: error.message });
   }
 };
 
+const fetchApplicantById = async (req, res) => {
+  try {
+    const employer = await Employer.findById(req.user.id);
+    if (!employer) {
+      return res.status(404).json({ msg: "Employer not found" });
+    }
 
+    const applicantId = req.params.id;
+
+    const applicant = await Employee.findById(applicantId);
+    if (!applicant) {
+      return res.status(404).json({ msg: "Applicant not found" });
+    }
+
+    res.status(200).json({ msg: "Applicant fetched successfully", applicant });
+  } catch (error) {
+    res.status(500).json({ msg: "Error fetching applicant", error: error.message });
+  }
+};
+
+const statistics = async (req, res) => {
+  try {
+    const employer = await Employer.findById(req.user.id);
+    if (!employer) {
+      return res.status(404).json({ msg: "Employer not found" });
+    }
+
+    const totalJobscount = await Job.countDocuments({ employerId: req.user.id });
+
+    const jobs = await Job.find({ employerId: req.user.id });
+    
+    // Initialize counters for applicants at different stages
+    let totalApplicantsCount = 0;
+    let wishlistCount = 0;
+    let shortlistedCount = 0;
+    let selectedCount = 0;
+    let rejectedCount = 0;
+
+    jobs.forEach(job => {
+      // Count total applicants from all the stages (applicants, wishlist, shortlisted, selected, rejected)
+      totalApplicantsCount += job.applicants.length + job.wishlist.length + job.shortlisted.length + job.selected.length + job.rejected.length;
+
+      // Count applicants for each stage separately
+      wishlistCount += job.wishlist.length;
+      shortlistedCount += job.shortlisted.length;
+      selectedCount += job.selected.length;
+      rejectedCount += job.rejected.length;
+    });
+
+    const activeJobsCount = await Job.countDocuments({
+      employerId: req.user.id,
+      applicationdeadline: { $gte: new Date() },
+    });
+
+    const expiredJobs = await Job.countDocuments({
+      employerId: req.user.id,
+      applicationdeadline: { $lt: new Date() }
+    });
+
+    const followers = await Employee.countDocuments({ followingEmployer: req.user.id });
+
+    const todayJobs = await Job.countDocuments({
+      employerId: req.user.id,
+      createdAt: {
+        $gte: new Date().setHours(0, 0, 0, 0), // Start of today
+        $lt: new Date().setHours(23, 59, 59, 999), // End of today
+      },
+    });
+
+    res.status(200).json({
+      msg: "Statistics fetched successfully",
+      totalJobsCount: totalJobscount,
+      totalApplicantsCount: totalApplicantsCount,
+      wishlistCount: wishlistCount,
+      shortlistedCount: shortlistedCount,
+      selectedCount: selectedCount,
+      rejectedCount: rejectedCount,
+      activeJobsCount: activeJobsCount,
+      expiredJobs: expiredJobs,
+      followers: followers,
+      todayJobs: todayJobs,
+    });
+  } catch (error) {
+    return res.status(500).json({ msg: "Error fetching employer", error: error.message });
+  }
+};
+
+
+const fetchEmployeesWithPagination = async (req, res) => {
+  try {
+    // Get filter and pagination parameters from query
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const searchName = req.query.searchName || '';
+    const skills = req.query.skills || '';
+    const location = req.query.location || [];
+    const yearsOfExperience = req.query.yearsOfExperience || '';
+    const sort = req.query.sort || 'yearsOfExperience'; // Default to sorting by yearsOfExperience
+    const sortOrder = req.query.sortOrder || 'asc'; // Default to ascending order
+
+    const startIndex = (page - 1) * limit;
+
+    // Construct the filter query
+    const filterQuery = {
+      ...(searchName && { $or: [{ firstname: { $regex: searchName, $options: 'i' } }, { lastname: { $regex: searchName, $options: 'i' } }] }),
+      ...(skills && { skills: { $regex: skills, $options: 'i' } }),
+      ...(location.length > 0 && { location: { $in: location } }), // Multiple locations filter
+      ...(yearsOfExperience && { yearsOfExperience: { $lte: parseInt(yearsOfExperience, 10) } }), // Less than or equal to experience filter
+    };
+
+    // Determine sort direction
+    const sortDirection = sortOrder === 'asc' ? 1 : -1;
+
+    // Fetch employees with pagination and filtering
+    const employees = await Employee.find(filterQuery)
+      .skip(startIndex)
+      .limit(limit)
+      .sort({ [sort]: sortDirection, createdAt: -1 }); // Sort by the given field (yearsOfExperience by default)
+
+    // Get total count of employees for metadata
+    const totalEmployees = await Employee.countDocuments(filterQuery);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalEmployees / limit);
+
+    res.status(200).json({
+      msg: "Employees fetched successfully",
+      metadata: {
+        totalEmployees,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+      employees,
+    });
+  } catch (error) {
+    res.status(500).json({ msg: "Error fetching employees", error: error.message });
+  }
+};
+
+const updateApplicantStatus = async (req, res) => {
+  try {
+    const { jobId, employeeId, action } = req.body;
+
+    const employer = await Employer.findById(req.user.id);
+    if (!employer) {
+      return res.status(404).json({ msg: "Employer not found" });
+    }
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ msg: "Job not found" });
+    }
+
+    if (job.employerId.toString() !== req.user.id) {
+      return res.status(403).json({ msg: "Access denied. You can only manage applicants for your own jobs." });
+    }
+
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      return res.status(404).json({ msg: "Employee not found" });
+    }
+
+    const validActions = ["wishlist", "shortlisted", "selected", "rejected"];
+    if (!validActions.includes(action)) {
+      return res.status(400).json({ msg: "Invalid action. Valid actions are: wishlist, shortlisted, selected, rejected." });
+    }
+    // Remove the employee from all categories
+    job.applicants = job.applicants.filter((id) => id.toString() !== employeeId);
+    job.wishlist = job.wishlist.filter((id) => id.toString() !== employeeId);
+    job.shortlisted = job.shortlisted.filter((id) => id.toString() !== employeeId);
+    job.selected = job.selected.filter((id) => id.toString() !== employeeId);
+    job.rejected = job.rejected.filter((id) => id.toString() !== employeeId);
+    // Add the employee to the appropriate category
+    if (action === "wishlist") {
+      job.wishlist.push(employeeId);
+    } else if (action === "shortlisted") {
+      job.shortlisted.push(employeeId);
+    } else if (action === "selected") {
+      job.selected.push(employeeId);
+    } else if (action === "rejected") {
+      job.rejected.push(employeeId);
+    }
+    // Save the updated job document
+    await job.save();
+    res.status(200).json({
+      msg: `Employee moved to ${action} successfully`,
+      job,
+    });
+  } catch (error) {
+    res.status(500).json({ msg: "Error updating applicant status", error: error.message });
+  }
+};
 
 module.exports = {
   employerSignup, employerLogin, postJob, fetchmydetails,
   editEmployerDetails, fetchMyJobs, fetchapplicationsbyjob, deleteJob,
-  editJob, fetchSingleJob,
+  editJob, fetchSingleJob, statistics, fetchApplicantById, fetchEmployeesWithPagination, verifyOTP, updateApplicantStatus
 };

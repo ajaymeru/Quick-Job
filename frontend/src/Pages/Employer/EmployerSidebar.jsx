@@ -1,31 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import "../../Styles/EmployerSidebar.scss";
+import axios from 'axios';
 
 const EmployerSidebar = ({ isOpen }) => {
+  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+  const [user, setUser] = useState(null);
   const location = useLocation();
   const menuItems = [
     { text: 'Statistics', path: "/employer/statistics", icon: "📊" },
     { text: 'Post Job', path: "/employer/postjob", icon: "✍️" },
     { text: 'My Job Posts', path: "/employer/myjobposts", icon: "📋" },
-    { text: 'Profile', path: "/employer/profile", icon: "👤" }
+    { text: 'Profile', path: "/employer/profile", icon: "👤" },
+    { text: 'Search Candidates', path: "/employer/employees", icon: "👥" },
   ];
+
+  useEffect(() => {
+    const fetchMyDetails = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.log("No token found");
+          return;
+        }
+        const response = await axios.get(`${SERVER_URL}api/employer/fetchmydetails`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        setUser(response.data.employer);
+        console.log(response.data.employer);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMyDetails();
+  }, []);
 
   return (
     <div className={`EmployerSidebar ${isOpen ? 'expanded' : 'collapsed'}`}>
       <div className="companylogo">
-        {isOpen ? (
+        {user && user.profileImage ? (
           <img
-            src="https://as2.ftcdn.net/v2/jpg/07/91/22/59/1000_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg"
+            src={user.profileImage}
             alt="Company Logo"
-            style={{ width: "100px" }}
+            style={{ width: "80%", borderRadius: "50%" }}
           />
         ) : (
-          <img
-            src="https://as2.ftcdn.net/v2/jpg/07/91/22/59/1000_F_791225927_caRPPH99D6D1iFonkCRmCGzkJPf36QDw.jpg"
-            alt="Logo"
-            style={{ width: "50px" }}
-          />
+          <img src="https://via.placeholder.com/100" alt="Company Logo" style={{ width: "80%", borderRadius: "50%" }} />
         )}
       </div>
       <div className="menuitems">

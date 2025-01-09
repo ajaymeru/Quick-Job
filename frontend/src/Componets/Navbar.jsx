@@ -1,31 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import "../Styles/Navbar.scss";
+import logobg from "../assets/logobg.png";
+import { getTokenAndRole } from "../utils/authUtils";
 
 const Navbar = () => {
-  const token = localStorage.getItem("token");
-  let role = null;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { token, role } = getTokenAndRole();
+  const navigate = useNavigate();
 
-  if (token) {
-    try {
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-      role = decodedToken?.role?.toLowerCase();
-      console.log(role);
-    } catch (error) {
-      console.error("Invalid token", error);
-      localStorage.removeItem("token");
-    }
-  }
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.reload();
   };
 
   const handleregisterclick = () => {
@@ -37,72 +23,59 @@ const Navbar = () => {
     }, 0);
   };
 
-  const links = role === 'employee' ? [
+  const employeeLinks = [
     { path: "/", label: "Home" },
     { path: "/jobs", label: "Find Jobs" },
     { path: "/companies", label: "Companies" },
-  ] : [
-    { path: "/", label: "Home" },
-    { path: "/about", label: "About" },
-    { path: "/contact", label: "Contact" },
+    { path: "/dashboard/profile", label: "My Profile" },
+    { path: "/dashboard/saved-jobs", label: "Saved Jobs" },
+    { path: "/dashboard/change-password", label: "Change Password" },
+    { path: "/dashboard/cvbuilder", label: "Cv Builder" },
+    { path: "#", label: "Logout", onclick: handleLogout },
   ];
 
   return (
     <div className="navbar">
-      <div className="hamburger" onClick={toggleMenu} aria-label="Toggle navigation menu" role="button">
-        <h3>☰</h3>
-      </div>
-
       <div className="logo">
-        <img src="logobg.png" alt="Quick Job Logo" />
+        <img src={logobg} alt="Quick Job Logo" />
         <div className="logo-title">
           <h2>Quick Job</h2>
           <p>Searching Made Easy</p>
         </div>
       </div>
 
-      <div className="nav-links">
-        {links.map((link) => (
-          <Link key={link.path} to={link.path}>
-            {link.label}
-          </Link>
+      <div className={`nav-links ${role === 'employee' ? 'visible' : 'hidden'}`}>
+        {employeeLinks.slice(0, 3).map((link) => (
+          <Link key={link.path} to={link.path}>{link.label}</Link>
         ))}
       </div>
 
-      <div className="nav-auth" style={{ display: role === 'employee' ? 'none' : 'flex' }}>
-        <Link to="/login">Login</Link>
-        <Link to="/#prehome-register" onClick={handleregisterclick}>Register</Link>
-      </div>
-
-      {isMenuOpen && (
-        <div className="hamburger-list">
-          {links.map((link) => (
-            <Link key={link.path} to={link.path}>
-              {link.label}
-            </Link>
-          ))}
-          <Link to="/login" style={{ display: role === 'employee' ? 'none' : 'block' }}>Login</Link>
-          <Link to="/#prehome-register" style={{ display: role === 'employee' ? 'none' : 'block' }} onClick={handleregisterclick}>Register</Link>
+      {!token && (
+        <div className="nav-auth">
+          <Link to="/login">Login</Link>
+          <Link to="/#prehome-register" onClick={handleregisterclick}>Register</Link>
         </div>
       )}
 
       {role === 'employee' && (
         <div className="avatar-container">
-          <div className="avatar" onClick={toggleDropdown} role="button" aria-label="Open avatar menu">
-            <img src="avatar.png" alt="User" />
+          <div className="avatar" onClick={() => setMenuOpen(!menuOpen)}>
+            <img src="avatar.png" alt="User Avatar" />
           </div>
-          <div className={`dropdown-menu ${isDropdownOpen ? 'open' : ''}`}>
-            <Link to="/profile">My Profile</Link>
-            <Link to="/dashboard">Dashboard</Link>
-            <button
-              onClick={() => {
-                localStorage.removeItem("token");
-                window.location.reload();
-              }}
-            >
-              Logout
-            </button>
-          </div>
+          {menuOpen && (
+            <div className="dropdown-menu">
+              {employeeLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.path}
+                  className="dropdown-item"
+                  onClick={link.onclick || (() => setMenuOpen(false))}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,0 +1,26 @@
+.employee-dashboard {
+    display: flex;
+    .dashboard-sidebar {
+      width: 200PX;
+      background-color: #f8f9fa;
+      padding: 1vw;
+      display: flex;
+      flex-direction: column;
+  
+      a {
+        margin: 0.5rem 0;
+        text-decoration: none;
+        color: #007bff;
+  
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  
+    .dashboard-content {
+      padding: 2vh 2vw;
+      flex: 1;
+    }
+  }
+  

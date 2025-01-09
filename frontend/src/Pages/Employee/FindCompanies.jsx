@@ -3,7 +3,11 @@ import "../../Styles/FindCompanies.scss";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import notfound from "../../assets/notfound.png";
+import Select from "react-select";
+
+
 
 const FindCompanies = () => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -11,11 +15,98 @@ const FindCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [filters, setFilters] = useState({
-    companyName: "",
-    location: "",
+    companyname: "",
     industry: "",
+    city: [],
   });
   const [followCompanies, setFollowCompanies] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  const industry = [
+    "IT Services & Consulting",
+    "Software Product",
+    "Internet",
+    "Electronics Manufacturing",
+    "Electronic Components / Semiconductors",
+    "Hardware & Networking",
+    "Emerging Technologies",
+    "Medical Services / Hospital",
+    "Pharmaceutical & Life Sciences",
+    "Medical Devices & Equipment",
+    "Biotechnology",
+    "Clinical Research / Contract Research",
+    "Industrial Equipment / Machinery",
+    "Auto Components",
+    "Chemicals",
+    "Automobile",
+    "Electrical Equipment",
+    "Building Material",
+    "Industrial Automation",
+    "Iron & Steel",
+    "Metals & Mining",
+    "Packaging & Containers",
+    "Petrochemical / Plastics / Rubber",
+    "Defence & Aerospace",
+    "Fertilizers / Pesticides / Agro chemicals",
+    "Pulp & Paper",
+    "Education / Training",
+    "E-Learning / EdTech",
+    "Engineering & Construction",
+    "Real Estate",
+    "Courier / Logistics",
+    "Power",
+    "Oil & Gas",
+    "Water Treatment / Waste Management",
+    "Aviation",
+    "Ports & Shipping",
+    "Urban Transport",
+    "Railways",
+    "Financial Services",
+    "FinTech / Payments",
+    "Insurance",
+    "NBFC",
+    "Banking",
+    "Investment Banking / Venture Capital / Private Equity",
+    "Recruitment / Staffing",
+    "Management Consulting",
+    "Accounting / Auditing",
+    "Facility Management Services",
+    "Architecture / Interior Design",
+    "Legal",
+    "Design",
+    "Law Enforcement / Security Services",
+    "Content Development / Language",
+    "Advertising & Marketing",
+    "Telecom / ISP",
+    "Printing & Publishing",
+    "Film / Music / Entertainment",
+    "Gaming",
+    "TV / Radio",
+    "Animation & VFX",
+    "Events / Live Entertainment",
+    "Sports / Leisure & Recreation",
+    "BPO / Call Centre",
+    "Analytics / KPO / Research",
+    "Textile & Apparel",
+    "Retail",
+    "Consumer Electronics & Appliances",
+    "Food Processing",
+    "FMCG",
+    "Hotels & Restaurants",
+    "Travel & Tourism",
+    "Furniture & Furnishing",
+    "Beauty & Personal Care",
+    "Fitness & Wellness",
+    "Gems & Jewellery",
+    "Beverage",
+    "Leather",
+    "NGO / Social Services / Industry Associations",
+    "Agriculture / Forestry / Fishing",
+    "Import & Export",
+    "Miscellaneous",
+    "Government / Public Administration"
+  ];
+
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -60,8 +151,30 @@ const FindCompanies = () => {
       }
     };
 
+    const fetchCities = async () => {
+      try {
+        const response = await axios.post(
+          "https://countriesnow.space/api/v0.1/countries/cities",
+          { country: "India" }
+        );
+        if (!response.data.error) {
+          const cityOptions = response.data.data.map((city) => ({
+            value: city,
+            label: city,
+          }));
+          cityOptions.push({ value: "Remote", label: "Remote" });
+          setCities(cityOptions);
+        } else {
+          console.error("Error fetching cities.");
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+      }
+    };
+
     fetchCompanies();
     fetchEmployeeDetails();
+    fetchCities();
   }, [SERVER_URL]);
 
   const handleFilterChange = (e) => {
@@ -72,23 +185,41 @@ const FindCompanies = () => {
     }));
   };
 
+  const handleMultiSelectChange = (selectedOptions, fieldName) => {
+    const selectedValues = selectedOptions ? selectedOptions.map((option) => option.value) : [];
+    setFilters((prev) => ({
+      ...prev,
+      [fieldName]: selectedValues,
+    }));
+  };
+  
   useEffect(() => {
     const applyFilters = () => {
       const filtered = companies.filter((company) => {
-        return (
-          (!filters.companyName ||
-            company.comapanyname
-              .toLowerCase()
-              .includes(filters.companyName.toLowerCase())) &&
-          (!filters.location ||
-            company.address.toLowerCase().includes(filters.location.toLowerCase())) &&
-          (!filters.industry ||
-            company.industry.toLowerCase().includes(filters.industry.toLowerCase()))
-        );
+        const matchesName =
+          !filters.companyname ||
+          company.companyname
+            .toLowerCase()
+            .includes(filters.companyname.toLowerCase());
+    
+        const matchesIndustry =
+          filters.industry.length === 0 ||
+          filters.industry.includes(company.industry);
+    
+        const matchesCity =
+          filters.city.length === 0 ||
+          filters.city.some((city) =>
+            company.city
+              ? company.city.toLowerCase() === city.toLowerCase()
+              : city === "Remote"
+          );
+    
+        return matchesName && matchesIndustry && matchesCity;
       });
       setFilteredCompanies(filtered);
     };
-
+    
+    
     applyFilters();
   }, [filters, companies]);
 
@@ -119,6 +250,11 @@ const FindCompanies = () => {
     }
   };
 
+  const industryOptions = industry.map((ind) => ({
+    value: ind,
+    label: ind,
+  }));
+
   return (
     <div className="FindCompanies">
       <div className="heading">
@@ -126,70 +262,64 @@ const FindCompanies = () => {
       </div>
       <div className="search">
         <div className="filters">
-          <div className="byCompanyName">
+          <div className="byCompanyname">
             <input
               type="text"
-              name="companyName"
+              name="companyname"
               placeholder="Enter company name"
-              value={filters.companyName}
+              value={filters.companyname}
               onChange={handleFilterChange}
             />
           </div>
-          <div className="location">
-            <input
-              type="text"
-              name="location"
-              placeholder="Enter location"
-              value={filters.location}
-              onChange={handleFilterChange}
-            />
-          </div>
-          <div className="companyType">
-            <select
+          <div className="industry">
+            <Select
+              isMulti
               name="industry"
-              value={filters.industry}
-              onChange={handleFilterChange}
-            >
-              <option value="">Select Company Type</option>
-              <option value="IT">IT</option>
-              <option value="Technology">Technology</option>
-              <option value="Finance">Finance</option>
-              <option value="Healthcare">Healthcare</option>
-            </select>
+              options={industryOptions}
+              placeholder="Select industries"
+              onChange={(selected) => handleMultiSelectChange(selected, "industry")}
+            />
+          </div>
+          <div className="city">
+            <Select
+              isMulti
+              name="city"
+              options={cities}
+              placeholder="Select cities"
+              onChange={(selected) => handleMultiSelectChange(selected, "city")}
+            />
           </div>
         </div>
         <div className="companies">
           {filteredCompanies.length > 0 ? (
             filteredCompanies.map((company) => (
               <div key={company._id} className="companyCard">
-                <h3>{company.comapanyname}</h3>
-                <p>
-                  <strong>Email:</strong> {company.email}
-                </p>
-                <p>
-                  <strong>Location:</strong> {company.address}
-                </p>
-                <p>
-                  <strong>Industry:</strong> {company.industry}
-                </p>
-                <p>
-                  <strong>Size:</strong> {company.companySize} employees
-                </p>
-                <p>
-                  <strong>Website:</strong>{" "}
-                  <a href={company.website} target="_blank" rel="noreferrer">
-                    {company.website}
-                  </a>
-                </p>
-                <div>
-                  <button onClick={() => handleCompanyCardClick(company._id)}>
-                    View
-                  </button>
-                  <button onClick={() => toggleFollowCompany(company._id)}>
-                    <FontAwesomeIcon icon={followCompanies.includes(company._id) ? "" : faPlus} />{" "}
-                    {followCompanies.includes(company._id) ? "Unfollow" : "Follow"}
-                  </button>
+
+                <div className="logo">
+                  {company && company.profileImage ? (
+                    <img src={company.profileImage} alt="" />
+                  ) : (
+                    <img src={notfound} alt="default logo" />
+                  )}
+                  <div className="company-info">
+                    <h3>{company.companyname}</h3>
+                    <button onClick={() => toggleFollowCompany(company._id)}>
+                      <FontAwesomeIcon icon={followCompanies.includes(company._id) ? "" : faPlus} />{" "}
+                      {followCompanies.includes(company._id) ? "Unfollow" : "Follow"}
+                    </button>
+                    <div className="industry-location">
+                      <p>{company.industry || "N/A"}</p>
+                      <p>{company.city || "N/A"}</p>
+                    </div>
+                  </div>
+
                 </div>
+
+
+
+                <button onClick={() => handleCompanyCardClick(company._id)}>
+                  &gt;
+                </button>
               </div>
             ))
           ) : (
