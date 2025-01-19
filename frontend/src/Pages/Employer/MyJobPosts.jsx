@@ -8,9 +8,10 @@ const MyJobPosts = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch jobs
   useEffect(() => {
     const fetchMyJobs = async () => {
       try {
@@ -38,11 +39,17 @@ const MyJobPosts = () => {
     fetchMyJobs();
   }, []);
 
-  // Delete job
-  const handleDeleteJob = async (jobId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this job?");
-    if (!confirmDelete) return;
+  const openDeleteModal = (jobId) => {
+    setSelectedJobId(jobId);
+    setIsModalOpen(true);
+  };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedJobId(null);
+  };
+
+  const handleDeleteJob = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -50,19 +57,19 @@ const MyJobPosts = () => {
         return;
       }
 
-      await axios.delete(`${SERVER_URL}api/employer/deletejob/${jobId}`, {
+      await axios.delete(`${SERVER_URL}api/employer/deletejob/${selectedJobId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
+      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== selectedJobId));
+      closeModal();
       alert("Job deleted successfully");
     } catch (error) {
       alert(error.response?.data?.msg || "Error deleting job");
     }
   };
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -110,7 +117,7 @@ const MyJobPosts = () => {
                   </button>
                   <button
                     className="delete-job-btn"
-                    onClick={() => handleDeleteJob(job._id)}
+                    onClick={() => openDeleteModal(job._id)}
                   >
                     Delete Job
                   </button>
@@ -119,6 +126,22 @@ const MyJobPosts = () => {
             ))}
           </tbody>
         </table>
+      )}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete this job post?</p>
+            <div className="modal-actions">
+              <button onClick={handleDeleteJob} className="confirm-btn">
+                Yes, Delete
+              </button>
+              <button onClick={closeModal} className="cancel-btn">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

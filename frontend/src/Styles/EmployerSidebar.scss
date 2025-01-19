@@ -1,45 +1,90 @@
 .EmployerSidebar {
-    background-color: #f8f9fa;
-    height: 100vh;
-    overflow: hidden;
-    transition: width 0.3s ease;
-    z-index: 1000;
-    
-    &.collapsed {
-      width: 60px;
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow: hidden;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  z-index: 1000;
+  
+  &.collapsed {
+    width: 60px;
+  }
+
+  &.expanded {
+    width: 200px;
+  }
+
+  .companylogo {
+    text-align: center;
+    margin: 20px 0;
+    transition: opacity 0.3s ease;
+
+    img {
+      width: 80%;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
     }
-  
-    &.expanded {
-      width: 200px;
+
+    &.collapsed img {
+      transform: scale(0.8);
     }
-  
-    .companylogo {
-      text-align: center;
-      margin: 10px 0;
+
+    &.expanded img {
+      transform: scale(1);
     }
-  
-    .menuitems {
-      .menuitem {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        transition: all 0.3s ease;
-  
-        .icon {
-          font-size: 20px;
-          margin-right: 10px;
+  }
+
+  .menuitems {
+    margin-top: 20px;
+    padding: 0;
+
+    .menuitem {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 5px 0;
+      border-radius: 5px;
+      
+      &:hover {
+        background-color: #007bff;
+        color: white;
+        transform: translateX(10px);
+      }
+
+      .icon {
+        font-size: 20px;
+        margin-right: 10px;
+        transition: transform 0.3s ease;
+      }
+
+      .text {
+        display: inline-block;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+
+        &.collapsed {
+          opacity: 0;
         }
-  
-        .text {
-          display: inline-block;
-          transition: opacity 0.3s ease;
-        }
-  
-        &.active {
-          background-color: #007bff;
-          color: white;
-        }
+      }
+
+      &.active {
+        background-color: #007bff;
+        color: white;
+      }
+
+      &:hover .icon {
+        transform: rotate(20deg);
       }
     }
   }
-  
+
+  // Optional transition for opening/closing the sidebar
+  &.collapsed .menuitem .text {
+    opacity: 0;
+  }
+
+  &.expanded .menuitem .text {
+    opacity: 1;
+  }
+}

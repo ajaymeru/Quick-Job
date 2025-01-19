@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import "../../Styles/Postjob.scss";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Confetti from 'react-confetti';
 
 const jobCategories = [
   "Administrative Assistant", "Office Manager", "Receptionist", "Customer Service Representative",
@@ -42,11 +45,10 @@ const Postjob = () => {
     applicationdeadline: ''
   });
 
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [cities, setCities] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     axios.post('https://countriesnow.space/api/v0.1/countries/cities', { country: 'India' })
@@ -101,7 +103,8 @@ const Postjob = () => {
         },
       });
 
-      setMessage(response.data.msg);
+      toast.success(response.data.msg || "Job posted successfully!")
+      setShowConfetti(true)
       setFormData({
         jobtitle: '',
         jobtype: '',
@@ -116,8 +119,9 @@ const Postjob = () => {
         applicationdeadline: ''
       });
       setSelectedCities([]);
+      setTimeout(() => setShowConfetti(false), 5000)
     } catch (error) {
-      setMessage(`Error posting job: ${error.response?.data?.msg || error.message}`);
+      toast.error(`Error posting job: ${error.response?.data?.msg || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -125,12 +129,12 @@ const Postjob = () => {
 
   return (
     <div className="Postjob">
+      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+      <ToastContainer />
       <div className="jobform">
         <div className="heading">
           <h2>Post a New Job</h2>
         </div>
-
-        {message && <p className="message">{message}</p>}
         <p className="note">Fields marked with * are required.</p>
 
         <form onSubmit={handleSubmit}>

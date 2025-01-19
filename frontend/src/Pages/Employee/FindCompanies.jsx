@@ -19,6 +19,7 @@ const FindCompanies = () => {
     industry: "",
     city: [],
   });
+  const [sortOption, setSortOption] = useState("")
   const [followCompanies, setFollowCompanies] = useState([]);
   const [cities, setCities] = useState([]);
 
@@ -192,7 +193,7 @@ const FindCompanies = () => {
       [fieldName]: selectedValues,
     }));
   };
-  
+
   useEffect(() => {
     const applyFilters = () => {
       const filtered = companies.filter((company) => {
@@ -201,11 +202,11 @@ const FindCompanies = () => {
           company.companyname
             .toLowerCase()
             .includes(filters.companyname.toLowerCase());
-    
+
         const matchesIndustry =
           filters.industry.length === 0 ||
           filters.industry.includes(company.industry);
-    
+
         const matchesCity =
           filters.city.length === 0 ||
           filters.city.some((city) =>
@@ -213,15 +214,16 @@ const FindCompanies = () => {
               ? company.city.toLowerCase() === city.toLowerCase()
               : city === "Remote"
           );
-    
+
         return matchesName && matchesIndustry && matchesCity;
       });
-      setFilteredCompanies(filtered);
+      const sorted = sortCompanies(filtered);
+      setFilteredCompanies(sorted);
     };
-    
-    
+
+
     applyFilters();
-  }, [filters, companies]);
+  }, [filters, companies, sortOption]);
 
   const handleCompanyCardClick = (id) => {
     navigate(`/company/${id}`);
@@ -255,11 +257,26 @@ const FindCompanies = () => {
     label: ind,
   }));
 
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
+  const sortCompanies = (companiesToSort) => {
+    return [...companiesToSort].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+
+      if (sortOption === "newest") {
+        return dateB - dateA;
+      } else if (sortOption === "oldest") {
+        return dateA - dateB;
+      }
+      return 0;
+    });
+  };
+
   return (
     <div className="FindCompanies">
-      <div className="heading">
-        <h2>Find Companies</h2>
-      </div>
       <div className="search">
         <div className="filters">
           <div className="byCompanyname">
@@ -289,6 +306,13 @@ const FindCompanies = () => {
               onChange={(selected) => handleMultiSelectChange(selected, "city")}
             />
           </div>
+          <div className="sort">
+            <select value={sortOption} onChange={handleSortChange}>
+              <option value="">Sort By</option>
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
         </div>
         <div className="companies">
           {filteredCompanies.length > 0 ? (
@@ -307,18 +331,16 @@ const FindCompanies = () => {
                       <FontAwesomeIcon icon={followCompanies.includes(company._id) ? "" : faPlus} />{" "}
                       {followCompanies.includes(company._id) ? "Unfollow" : "Follow"}
                     </button>
-                    <div className="industry-location">
-                      <p>{company.industry || "N/A"}</p>
-                      <p>{company.city || "N/A"}</p>
-                    </div>
+
                   </div>
 
                 </div>
-
-
-
+                <div className="industry-location">
+                  <p>{company.industry || "N/A"}</p>
+                  <p>{company.city || "N/A"}</p>
+                </div>
                 <button onClick={() => handleCompanyCardClick(company._id)}>
-                  &gt;
+                  see more
                 </button>
               </div>
             ))

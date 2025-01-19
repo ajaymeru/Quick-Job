@@ -3,7 +3,7 @@ import { Link, Route, Routes } from 'react-router-dom';
 import EmployeeProfile from './EmployeeProfile';
 import SavedJobs from './SavedJobs';
 import ChangePassword from './ChangePassword';
-import "../Styles/EmployeeDashboard.scss";
+import "../../Styles/EmployeeDashboard.scss";
 import CvBuilder from './CvBuilder';
 
 const EmployeeDashboard = () => {

@@ -133,18 +133,23 @@ const verifyOTP = async (req, res) => {
 
 const fetchJobs = async (req, res) => {
     try {
-        const jobs = await Job.find().populate("employerId", "profileImage companyname")
-        if (!jobs) {
-            return res.status(404).json({ msg: "No jobs found" })
-        }
+        const { page = 1, limit = 10 } = req.query;
+        const jobs = await Job.find()
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit))
+            .populate("employerId", "profileImage companyname");
+
+        const totalJobs = await Job.countDocuments();
+
         res.status(200).json({
             msg: "Jobs fetched successfully",
-            jobs,
-        })
+            jobs: jobs || [],
+            totalJobs,
+        });
     } catch (error) {
-        res.status(500).json({ msg: "Error fetching jobs", error: error.message })
+        res.status(500).json({ msg: "Error fetching jobs", error: error.message });
     }
-}
+};
 
 const fetchCompanies = async (req, res) => {
     try {
@@ -456,4 +461,4 @@ const changePassword = async (req, res) => {
     }
 }
 
-module.exports = { editEmployeeDetails, employeeSignup, getSavedJobs, employeeLogin, fetchJobs, fetchCompanies, fetchoneJOb, fetchoneCompany, applyJob, toggleSaveJob, fetchmydetails, toggleFollowCompany, verifyOTP,resetPasswordRequest, resetPassword, changePassword };
+module.exports = { editEmployeeDetails, employeeSignup, getSavedJobs, employeeLogin, fetchJobs, fetchCompanies, fetchoneJOb, fetchoneCompany, applyJob, toggleSaveJob, fetchmydetails, toggleFollowCompany, verifyOTP, resetPasswordRequest, resetPassword, changePassword };

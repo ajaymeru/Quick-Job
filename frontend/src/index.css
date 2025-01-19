@@ -1,18 +1,21 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 
 }
 
-a{
+a {
     text-decoration: none;
+    color: black;
 }
 
-:root{
-    --onebg: #f8f9fa;
-}
-h1, h2, h3, h4, h5, h6{
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: 'Poppins', sans-serif;
     margin: 0;
 }

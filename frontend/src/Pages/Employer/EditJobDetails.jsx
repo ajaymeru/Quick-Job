@@ -3,6 +3,8 @@ import "../../Styles/EditJobDetails.scss";
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Select from 'react-select';
+import { ToastContainer, toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const jobCategories = [
     "Administrative Assistant", "Office Manager", "Receptionist", "Customer Service Representative",
@@ -48,6 +50,7 @@ const EditJobDetails = () => {
                 });
 
                 const job = response.data.job;
+                console.log(job);
                 setJobDetails(job);
                 setSelectedCities(job.location.map(city => ({ value: city, label: city })));
             } catch (error) {
@@ -97,9 +100,9 @@ const EditJobDetails = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            setMessage(response.data.msg || "Job updated successfully!");
+            toast.success(response.data.msg || "Job updated successfully!");
         } catch (error) {
-            setMessage(`Error updating job: ${error.response?.data?.msg || error.message}`);
+            toast.error(`Error updating job: ${error.response?.data?.msg || error.message}`);
         } finally {
             setIsEditing(false);
         }
@@ -112,7 +115,6 @@ const EditJobDetails = () => {
             <div className="jobform">
                 <div className="heading">
                     <h2>Edit Job Details ➡️</h2>
-                    {message && <p className="message">{message}</p>}
                     <button onClick={handleSave}>
                         {isEditing ? "Save Changes" : "Edit Job"}
                     </button>
@@ -234,26 +236,26 @@ const EditJobDetails = () => {
                         <textarea
                             rows={3}
                             name="jobresponsibilities"
-                            value={jobDetails.jobresponsibilities || ''}
+                            value={jobDetails.jobresponsibilities ? jobDetails.jobresponsibilities.join('\n') : ''}
                             onChange={handleInputChange}
                             disabled={!isEditing}
                             placeholder={`Example:\n Resolve conflicts within team members.\n Support team building activities.`}
                         />
                     </div>
+
                     <div className="group">
                         <label htmlFor="">Preferred Qualifications</label>
                         <textarea
                             rows={3}
                             name="preferredqualifications"
-                            value={jobDetails.preferredqualifications || ''}
+                            value={jobDetails.preferredqualifications ? jobDetails.preferredqualifications.join('\n') : ''}
                             onChange={handleInputChange}
                             disabled={!isEditing}
                         />
                     </div>
-
                 </div>
-
             </div>
+            <ToastContainer />
         </div >
     );
 };

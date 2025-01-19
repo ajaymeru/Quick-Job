@@ -6,8 +6,7 @@ import axios from 'axios';
 const EmployerNavbar = ({ toggleSidebar, isSidebarOpen }) => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
   const [user, setUser] = useState({});
-
-
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
   useEffect(() => {
     const fetchmydetails = async () => {
@@ -35,8 +34,20 @@ const EmployerNavbar = ({ toggleSidebar, isSidebarOpen }) => {
   const logout = () => {
     localStorage.removeItem("token");
     window.location.reload();
-
   }
+
+  const handleLogoutClick = () => {
+    setIsModalOpen(true); // Open the modal on logout click
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Close the modal without logging out
+  };
+
+  const confirmLogout = () => {
+    logout(); // Proceed with logout when confirmed
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="EmployerNavbar">
@@ -44,9 +55,20 @@ const EmployerNavbar = ({ toggleSidebar, isSidebarOpen }) => {
         <Hamburger toggled={isSidebarOpen} toggle={toggleSidebar} size={24} />
       </div>
 
-      <p>Welcome {user.companyname } </p>
+      <p>Welcome {user.companyname} </p>
 
-      <button onClick={logout}>Logout</button>
+      <button onClick={handleLogoutClick}>Logout</button>
+
+      {/* Modal for logout confirmation */}
+      <div className={`modal-overlay ${isModalOpen ? 'show' : ''}`}>
+        <div className="modal">
+          <h4>Are you sure you want to log out?</h4>
+          <div className="modal-actions">
+            <button className="btn-cancel" onClick={closeModal}>Cancel</button>
+            <button className="btn-confirm" onClick={confirmLogout}>Confirm</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

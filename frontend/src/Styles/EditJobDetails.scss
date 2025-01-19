@@ -1,77 +1,201 @@
 .EditJobDetails {
-    width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+  box-shadow: 0 4px 6px rgba(222, 48, 48, 0.1);
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+  animation: fadeIn 0.6s ease-in-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .jobform {
     display: flex;
     flex-direction: column;
-    padding: 2%;
-    box-shadow: 0 4px 6px rgba(222, 48, 48, 0.1);
-    border-radius: 8px;
-    border: 1px solid #eaeaea;
+    gap: 1vh;
 
-    .jobform {
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1vh;
+      flex-wrap: wrap;
+
+      h2 {
+        text-align: center;
+        font-size: large;
+        color: #333;
+        text-transform: uppercase;
+        font-weight: 600;
+        animation: fadeInHeader 0.8s ease-in-out;
+      }
+
+      @keyframes fadeInHeader {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+
+
+      button {
+        padding: 1vh 1vw;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 1rem;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+      }
+    }
+
+    .jobinputs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      align-items: start;
+      column-gap: 2vh;
+      animation: slideIn 0.8s ease-in-out;
+
+      @media (max-width: 500px) {
+        grid-template-columns: 1fr;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .group {
         display: flex;
         flex-direction: column;
-        gap: 1vh;
+        margin-bottom: 15px;
 
-        .heading {
-            display: flex;
-            justify-content: space-between;
-
-            h2 {
-                text-align: center;
-            }
-
-            .message {
-                text-align: center;
-            }
+        label {
+          font-weight: bold;
+          margin-bottom: 5px;
+          color: #333;
+          transition: color 0.3s ease;
         }
 
-        .jobinputs {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            align-items: start;
-            column-gap: 2vh;
+        input,
+        select {
+          padding: 10px;
+          margin: 5px 0;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-size: 1rem;
+          transition: border-color 0.3s ease;
 
-            @media (max-width:500px) {
-                grid-template-columns: repeat(1, 1fr);
-            }
-
-            .group {
-                display: flex;
-                flex-direction: column;
-
-                label {
-                    font-weight: bold;
-                    margin-bottom: 5px;
-                }
-
-                input,
-                select {
-                    padding: 8px;
-                    margin: 5px 0;
-                    border: 1px solid #ccc;
-                    border-radius: 5px;
-                }
-
-            }
+          &:focus {
+            border-color: #007bff;
+            outline: none;
+          }
         }
+      }
     }
 
     .jobinputs2 {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        align-items: start;
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 1vh;
+      animation: fadeInInputs 0.6s ease-in-out;
 
-        .group {
-            display: flex;
-            flex-direction: column;
-
-            label {
-                font-weight: bold;
-                margin: 5px 0;
-            }
-
-            textarea {}
-
+      @keyframes fadeInInputs {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1vh;
+
+        label {
+          font-weight: bold;
+          margin: 5px 0;
+          color: #333;
+          transition: color 0.3s ease;
+        }
+
+        textarea {
+          padding: 10px;
+          margin: 5px 0;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-size: 1rem;
+          transition: border-color 0.3s ease;
+
+          &:focus {
+            border-color: #007bff;
+            outline: none;
+          }
+        }
+      }
     }
+  }
+
+  /* Focused input effects */
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  /* Button hover effects */
+  button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #0056b3;
+      transform: translateY(-3px);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 6px rgba(0, 123, 255, 0.7);
+    }
+  }
 }

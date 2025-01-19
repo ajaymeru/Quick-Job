@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import "../../Styles/SearchCandidates.scss";
 import axios from 'axios';
-import Select from 'react-select'; // Assuming you're using react-select for multi-select
+import Select from 'react-select';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, } from '@fortawesome/free-solid-svg-icons';
+
 
 const SearchCandidates = () => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -40,7 +43,7 @@ const SearchCandidates = () => {
             limit: 10,
             searchName,
             skills,
-            location: selectedLocations.map(loc => loc.value), 
+            location: selectedLocations.map(loc => loc.value),
             yearsOfExperience,
             sort: 'yearsOfExperience', // Sort by years of experience
             sortOrder: sortDirection, // Ascending or descending order
@@ -49,7 +52,7 @@ const SearchCandidates = () => {
 
         setEmployees(response.data.employees);
         setTotalPages(response.data.metadata.totalPages);
-        setFilteredCandidates(response.data.employees); 
+        setFilteredCandidates(response.data.employees);
       } catch (error) {
         console.log(error);
       } finally {
@@ -135,8 +138,9 @@ const SearchCandidates = () => {
               <th>Email</th>
               <th>Phone</th>
               <th>Location</th>
-              <th onClick={handleSortExperience} style={{ cursor: 'pointer' }}>
-                Experience <i className={`fa-solid fa-sort ${sortDirection === 'asc' ? 'asc' : 'desc'}`} />
+              <th onClick={handleSortExperience} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', justifyContent: "space-evenly" }}>
+                Experience
+                <FontAwesomeIcon icon={faSort} />
               </th>
             </tr>
           </thead>
@@ -144,7 +148,7 @@ const SearchCandidates = () => {
             {filteredCandidates.map((employee, index) => (
               <tr key={employee._id}>
                 <td>{(currentPage - 1) * 10 + index + 1}</td>
-                <td>{employee.firstname} {employee.lastname}</td>
+                <td style={{ cursor: "pointer", display:"flex" }} ><a style={{width:"100%"}} href={`/employer/candidate/${employee._id}`}>{employee.firstname} {employee.lastname}</a></td>
                 <td>{employee.email}</td>
                 <td>{employee.phone}</td>
                 <td>{employee.location}</td>

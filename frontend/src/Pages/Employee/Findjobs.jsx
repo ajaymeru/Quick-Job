@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../../Styles/Findjobs.scss";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { faBookmark as solidBookmark } from "@fortawesome/free-solid-svg-icons";
 import { faBookmark as regularBookmark } from "@fortawesome/free-regular-svg-icons";
 import notfound from "../../assets/notfound.png";
 import location from "../../assets/location.png";
+import ScrollReveal from "scrollreveal"
 
 const Findjobs = () => {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -22,33 +23,53 @@ const Findjobs = () => {
   const [cities, setCities] = useState([]);
   const navigate = useNavigate();
 
+  const [page, setpage] = useState(1)
+  const [hasmore, sethasmore] = useState(true)
+  const [loading, setloading] = useState(false)
+  const [sortOption, setSortOption] = useState("")
+
+  const loaderRef = useRef();
+
   const jobTypes = ["Full-time", "Part-time", "Contract", "Temporary", "Internship"]
   const experienceLevels = ["Internship", "Entry level", "Associate", "Mid-Senior level", "Director", "Executive"];
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found");
-          return;
-        }
+  const fetchJobs = async (pageNum = 1) => {
+    try {
+      setloading(true);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
 
-        const response = await axios.get(`${SERVER_URL}api/employee/jobs`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const fetchedJobs = response.data.jobs;
-        console.log(fetchedJobs);
+      const response = await axios.get(`${SERVER_URL}api/employee/jobs`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { page: pageNum },
+      });
 
-        setJobs(fetchedJobs);
-        setFilteredJobs(fetchedJobs);
-      } catch (error) {
+      const fetchedJobs = response.data.jobs;
+
+      if (fetchedJobs.length === 0 && pageNum > 1) {
+        sethasmore(false); // No more jobs to load
+      }
+
+      setJobs((prev) => [...prev, ...fetchedJobs]);
+      setFilteredJobs((prev) => [...prev, ...fetchedJobs]);
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.warn("No more jobs found.");
+        sethasmore(false);
+      } else {
         console.error("Error fetching jobs:", error);
       }
-    };
+    } finally {
+      setloading(false);
+    }
+  };
 
+  useEffect(() => {
     const fetchCities = async () => {
       try {
         const response = await axios.post("https://countriesnow.space/api/v0.1/countries/cities", {
@@ -84,10 +105,61 @@ const Findjobs = () => {
       }
     };
 
-    fetchJobs();
     fetchCities();
     fetchEmployeeDetails();
   }, []);
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  useEffect(() => {
+    const observer = ScrollReveal({
+      reset: true,
+      distance: "50px",
+      duration: 700,
+      delay: 100,
+    });
+
+    if (loaderRef.current) {
+      observer.reveal(loaderRef.current, {
+        afterReveal: () => {
+          if (hasmore && !loading) {
+            setpage((prev) => prev + 1);
+          }
+        },
+      });
+    }
+
+    return () => observer.destroy();
+  }, [loaderRef.current, hasmore, loading]);
+
+  useEffect(() => {
+    if (page > 1 && hasmore) {
+      fetchJobs(page).then(() => {
+        const sorted = sortJobs(jobs);
+        setFilteredJobs(sorted);
+      });
+    }
+  }, [page]);
+
+  const handleSortChange = async (e) => {
+    setSortOption(e.target.value)
+  }
+
+
+  const sortJobs = (jobsToSort) => {
+    return [...jobsToSort].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      if (sortOption === "newest") {
+        return dateB - dateA;
+      } else if (sortOption === "oldest") {
+        return dateA - dateB;
+      }
+      return 0; // Default: no sorting change
+    });
+  };
 
   useEffect(() => {
     const applyFilters = () => {
@@ -107,12 +179,13 @@ const Findjobs = () => {
         return matchesKeyword && matchesRequirements && matchesJobType && matchesExperience && matchesCity;
       });
 
-      setFilteredJobs(filtered);
+      const sorted = sortJobs(filtered);
+      setFilteredJobs(sorted);
     };
 
 
     applyFilters();
-  }, [searchKeyword, jobRequirements, selectedJobTypes, selectedExperienceLevels, selectedCities, jobs]);
+  }, [searchKeyword, jobRequirements, selectedJobTypes, selectedExperienceLevels, selectedCities, jobs, sortOption]);
 
   const handlejobcardclick = (id) => {
     navigate(`/job/${id}`);
@@ -144,9 +217,6 @@ const Findjobs = () => {
 
   return (
     <div className="Findjobs">
-      <div className="heading">
-        <h1>Find Jobs</h1>
-      </div>
       <div className="search">
         <div className="filters">
           <div className="inputs">
@@ -162,9 +232,16 @@ const Findjobs = () => {
               value={jobRequirements}
               onChange={(e) => setJobRequirements(e.target.value)}
             />
+            <div className="sort">
+              <select value={sortOption} onChange={handleSortChange}>
+                <option value="">Sort By</option>
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+              </select>
+            </div>
           </div>
           <div className="checkboxes">
-          <div className="multi-select">
+            <div className="multi-select">
               <h4>Location</h4>
               <Select
                 isMulti
@@ -257,6 +334,8 @@ const Findjobs = () => {
           ) : (
             <p>No jobs found matching the filters.</p>
           )}
+          {loading && <p>Loading...</p>}
+          <div ref={loaderRef}></div>
         </div>
       </div>
     </div>

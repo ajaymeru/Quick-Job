@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../../Styles/ApplicantsByJob.scss";
 
 const ApplicantsByJob = () => {
@@ -56,7 +58,6 @@ const ApplicantsByJob = () => {
     }
   };
 
-  // Initial fetch of applications
   useEffect(() => {
     fetchApplications();
   }, [jobId]);
@@ -69,7 +70,7 @@ const ApplicantsByJob = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setErrorMessage("No token found. Please log in.");
+        toast.error("No token found. Please log in.");
         setIsUpdating(false);
         return;
       }
@@ -81,16 +82,14 @@ const ApplicantsByJob = () => {
       );
 
       if (response.data.msg) {
-        alert(response.data.msg); // Show success notification
+        toast.success(response.data.msg); // Success Toast
       }
 
-      // Re-fetch the applications to update the tables after status change
-      fetchApplications(); 
-
+      fetchApplications(); // Refresh the data after the update
     } catch (error) {
-      setErrorMessage(
+      toast.error(
         error.response?.data?.msg || "Error updating applicant status."
-      );
+      ); // Error Toast
     } finally {
       setIsUpdating(false);
     }
@@ -116,7 +115,7 @@ const ApplicantsByJob = () => {
           <tbody>
             {data.map((applicant, index) => {
               if (!applicant || !applicant._id) {
-                return null; // Skip invalid entries
+                return null;
               }
 
               return (
@@ -139,7 +138,6 @@ const ApplicantsByJob = () => {
                     </a>
                   </td>
                   <td>
-                    {/* Render action buttons conditionally based on status */}
                     {status !== "wishlist" && (
                       <button
                         onClick={() => handleUpdateStatus(applicant._id, "wishlist")}
@@ -193,6 +191,7 @@ const ApplicantsByJob = () => {
   return (
     <div className="ApplicantsByJob">
       <h2>Applicants for Job</h2>
+      <ToastContainer position="top-right" autoClose={3000} />
       {renderTable("Applicants", applicants, "applicants")}
       {renderTable("Wishlist", wishlist, "wishlist")}
       {renderTable("Shortlisted", shortlisted, "shortlisted")}

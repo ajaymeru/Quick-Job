@@ -7,60 +7,185 @@
     border-radius: 8px;
     border: 1px solid #eaeaea;
     gap: 2vh;
-
-    .Company-Profile, .company-contact, .company-links {
-        width: 100%;
+    animation: fadeIn 0.5s ease-in-out;
+  
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  
+    .Company-Profile, 
+    .company-contact, 
+    .company-links {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+      }
+  
+      .heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 2px solid #b7b5b5;
+        background-color: #f8f9fa;
+        border-radius: 10px 10px 0 0;
+  
+        h2 {
+          font-size: 1.5rem;
+          font-weight: bold;
+          animation: slideInLeft 0.5s ease-in-out;
+        }
+  
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+  
+        .editbutton {
+          padding: 10px 15px;
+          background-color: #4caf50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: background-color 0.3s ease, transform 0.3s ease;
+  
+          &:hover {
+            background-color: #3e8e41;
+            transform: scale(1.1);
+          }
+        }
+      }
+  
+      .company-info, 
+      .contact-info, 
+      .social-links {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 1rem;
+  
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+  
+        .group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          animation: fadeInUp 0.7s ease-in-out;
+  
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+  
+          label {
+            font-weight: bold;
+            color: #333;
+          }
+  
+          input, 
+          select, 
+          textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  
+            &:hover {
+              border-color: #007bff;
+              box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            }
+  
+            &:focus {
+              outline: none;
+              border-color: #007bff;
+              box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.8);
+            }
+          }
+  
+          textarea {
+            resize: none;
+          }
+        }
+      }
+  
+      .company-description {
         display: flex;
         flex-direction: column;
-
-        .heading {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1vh 3vh 1vh 3vh;
-            border-bottom: 2px solid #b7b5b5;
-
-            h2 {}
-
-            .editbutton {
-                padding: 10px;
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-
-            }
+        gap: 0.5rem;
+  
+        label {
+          font-weight: bold;
+          color: #333;
         }
-
-        .company-info, .contact-info, .social-links {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2vh;
-
-            .group {
-                display: flex;
-                flex-direction: column;
-
-                label {
-                    font-weight: bold;
-                    margin-bottom: 5px;
-                }
-
-                input {
-                    padding: 10px;
-                }
-            }
-            @media (max-width: 500px) {
-                grid-template-columns: 1fr;
-                gap: 1vh;
-            }
+  
+        textarea {
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  
+          &:hover {
+            border-color: #007bff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+          }
+  
+          &:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.8);
+          }
         }
-
-        .company-description {
-            display: flex;
-            flex-direction: column;
-
-        }
+      }
     }
-}
+  
+    .company-links {
+      .social-links {
+        .group {
+          input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+  
+            &:hover,
+            &:focus {
+              border-color: #6c757d;
+              box-shadow: 0 0 8px rgba(108, 117, 125, 0.5);
+            }
+          }
+        }
+      }
+    }
+  }
+  

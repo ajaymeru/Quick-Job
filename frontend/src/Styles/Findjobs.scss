@@ -4,10 +4,6 @@
     gap: 5vh;
     padding: 2vh;
 
-    .heading {
-        text-align: center;
-    }
-
     .search {
         display: flex;
         gap: 2vh;
@@ -21,6 +17,7 @@
             flex-direction: column;
             gap: 1vh;
             width: 250px;
+            animation: fadeInLeft 1s ease-in-out;
 
             @media (max-width:750px) {
                 width: 100%;
@@ -36,22 +33,61 @@
 
                 input {
                     width: 100%;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    padding: 10px;
+                    transition: all 0.3s ease-in-out;
+
+                    &:focus {
+                        border-color: #4CAF50;
+                        outline: none;
+                        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+                    }
                 }
 
+                .sort {
+                    display: flex;
+
+                    select {
+                        width: 100%;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        padding: 10px;
+                        transition: all 0.3s ease-in-out;
+
+                        &:focus {
+                            border-color: #4CAF50;
+                            outline: none;
+                            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+                        }
+                    }
+
+                }
             }
-            .checkboxes{
+
+            .checkboxes {
                 display: flex;
                 flex-direction: column;
                 gap: 1vh;
 
-                .checkbox-group{
+                .checkbox-group {
                     display: flex;
                     flex-direction: column;
 
-                    label{
+                    label {
                         display: flex;
                         align-items: center;
                         gap: 15px;
+                        animation: fadeIn 0.8s ease-in-out;
+
+                        input {
+                            accent-color: #4CAF50;
+                        }
+
+                        &:hover {
+                            color: #4CAF50;
+                            cursor: pointer;
+                        }
                     }
                 }
             }
@@ -61,8 +97,8 @@
             flex: 1;
             display: grid;
             grid-template-columns: repeat(4, 250px);
-            column-gap: 3vh;
-            row-gap: 1vh;
+            column-gap: 2vw;
+            row-gap: 2vh;
             justify-content: center;
 
             @media (max-width:1240px) {
@@ -88,6 +124,13 @@
                 border: 1px solid grey;
                 padding: 10px;
                 border-radius: 10px;
+                animation: fadeInUp 1s ease-in-out;
+                transition: all 0.3s ease-in-out;
+
+                &:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                }
 
                 .jobcardtop {
                     display: flex;
@@ -119,11 +162,24 @@
                             border-radius: 5px;
                             cursor: pointer;
                             height: fit-content;
+                            transition: background-color 0.3s ease-in-out;
+
+                            &:hover {
+                                background-color: #45A049;
+                            }
                         }
 
+                        svg {
+                            cursor: pointer;
+                            font-size: 1.5rem;
+                            color: #4CAF50;
+                            transition: color 0.3s ease-in-out;
+
+                            &:hover {
+                                color: #45A049;
+                            }
+                        }
                     }
-
-
                 }
 
                 .jobcardbottom {
@@ -149,6 +205,7 @@
                             font-weight: 600;
                             display: flex;
                             align-items: center;
+                            animation: fadeIn 1s ease-in-out;
 
                             img {
                                 width: 15px;
@@ -157,8 +214,56 @@
                         }
                     }
                 }
-
             }
         }
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
