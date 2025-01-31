@@ -1,5 +1,6 @@
 const express = require("express");
-const { employeeSignup, employeeLogin, fetchJobs, fetchCompanies, fetchoneJOb, fetchoneCompany, applyJob, toggleSaveJob, fetchmydetails, toggleFollowCompany, getSavedJobs, editEmployeeDetails, verifyOTP, resetPasswordRequest, resetPassword, changePassword } = require("../controller/EmployeeController");
+const { employeeSignup, employeeLogin, fetchJobs, fetchCompanies, fetchoneJOb, fetchoneCompany, applyJob, toggleSaveJob, fetchmydetails, toggleFollowCompany, getSavedJobs, editEmployeeDetails, verifyOTP, resetPasswordRequest, resetPassword,
+    fetchEmployerImages, changePassword } = require("../controller/EmployeeController");
 const { authenticateUser, authorizeRole } = require("../middleware/middleware")
 const createStorage = require("../cloudinaryConfig")
 const multer = require("multer");
@@ -19,7 +20,8 @@ router.post("/verify-otp", verifyOTP)
 
 router.post("/reset-password-request", resetPasswordRequest);
 router.post("/reset-password", resetPassword);
-router.post("/change-password", authenticateUser, authorizeRole("Employee"), changePassword);
+
+router.get("/employer-images", fetchEmployerImages);
 
 router.get("/mydetails", authenticateUser, authorizeRole("Employee"), fetchmydetails)
 router.get("/jobs", authenticateUser, authorizeRole("Employee"), fetchJobs)

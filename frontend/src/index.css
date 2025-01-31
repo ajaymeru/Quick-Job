@@ -4,18 +4,40 @@
     box-sizing: border-box;
 
 }
-
-a {
-    text-decoration: none;
-    color: black;
+:root {
+    /* White Colors */
+    --white-1: #ffffff; /* Pure White */
+    --white-2: #f9f9f9; /* Light Off-White */
+    --white-3: #f1f1f1; /* Very Light Gray */
+    --white-4: #e0e0e0; /* Soft Gray */
+    --white-5: #d1d1d1; /* Light Gray */
+    --white-6: #c0c0c0; /* Grayish White */
+    --white-7: #b0b0b0; /* Muted White */
+    --white-8: #a0a0a0; /* Very Muted White */
+    
+    /* Black Colors */
+    --black-1: #222222; /* Deep Black for text */
+    --black-2: #333333; /* Darker Grayish Black */
+    --black-3: #444444; /* Medium Grayish Black */
+    --black-4: #555555; /* Slightly Lighter Black */
+    --black-5: #666666; /* Grayish Black for soft contrasts */
+    
+    /* Gray Colors */
+    --gray-1: #777777; /* Medium Gray for text */
+    --gray-2: #888888; /* Light Gray */
+    --gray-3: #999999; /* Lighter Gray */
+    --gray-4: #aaaaaa; /* Subtle Gray for borders */
+    --gray-5: #bbbbbb; /* Very Light Gray for backgrounds */
+    
+    /* High Contrast */
+    --high-contrast: #000000; /* Pure Black */
+    
+    /* Custom Colors for the Navbar */
+    --primary: #abc4ff; /* Light Blue */
+    --secondary-light: #d7e3fc; /* Light Secondary */
+    --background: #edf2fb; /* Background light */
+    --black: #222222; /* Black for text */
+    --gray: #777777; /* Gray for muted text */
+    --white: #ffffff; /* White for background and highlights */
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-}

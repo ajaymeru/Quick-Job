@@ -1,0 +1,59 @@
+p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 10px;
+}
+
+/* Links */
+a {
+    text-decoration: none;
+    color: var(--primary);
+    transition: color 0.3s ease-in-out;
+}
+
+a:hover {
+    color: var(--primary-light);
+}
+
+/* Input & Textarea */
+input, textarea {
+    padding: 10px;
+    border: 1px solid var(--secondary-light);
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: var(--white);
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary);
+    background-color: var(--background-light);
+}
+
+/* Buttons */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: var(--primary);
+    color: var(--white);
+    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: var(--primary-light);
+    transform: scale(1.05);
+}

@@ -68,6 +68,7 @@ const employeeLogin = async (req, res) => {
 
             await employee.save();
             await sendEmail(email, "Your OTP Code", `Your OTP is ${otp}. It is valid for 10 minutes.`);
+            console.log(email, otp)
 
             return res.status(200).json({  // Use 200 to simplify frontend handling
                 msg: "OTP sent to your email. Please verify to proceed.",
@@ -128,6 +129,94 @@ const verifyOTP = async (req, res) => {
         res.json({ msg: "OTP verified successfully." });
     } catch (error) {
         res.status(500).json({ msg: "Error verifying OTP", error: error.message });
+    }
+};
+
+const resetPasswordRequest = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const employee = await Employee.findOne({ email });
+        if (!employee) {
+            return res.status(404).json({ msg: "Employee not found" });
+        }
+        const otp = generateOTP();
+        const otpExpires = Date.now() + 10 * 60 * 1000;
+        employee.otp = otp;
+        employee.otpExpires = otpExpires;
+        await employee.save();
+        await sendEmail(email, "Password Reset OTP", `Your OTP for password reset is ${otp}. It is valid for 10 minutes.`);
+        console.log(email, otp)
+        res.status(200).json({ msg: "OTP sent for password reset", userId: employee._id });
+    }
+    catch (error) {
+        res.status(500).json({ msg: "Error sending OTP for password reset", error: error.message });
+    }
+}
+
+const resetPassword = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+    try {
+        const employee = await Employee.findOne({ email });
+        if (!employee) {
+            return res.status(404).json({ msg: "Employee not found" });
+        }
+        if (employee.otp !== otp || employee.otpExpires < Date.now()) {
+            return res.status(400).json({ msg: "Invalid or expired OTP" });
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        employee.password = hashedPassword;
+        employee.otp = null; // Clear OTP
+        employee.otpExpires = null;
+        await employee.save();
+        res.status(200).json({ msg: "Password reset successfully" });
+    } catch (error) {
+        res.status(500).json({ msg: "Error resetting password", error: error.message });
+    }
+}
+
+const changePassword = async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const employeeId = req.user.id;
+    try {
+        const employee = await Employee.findById(employeeId);
+        if (!employee) {
+            return res.status(404).json({ msg: "Employee not found" });
+        }
+        const isMatch = await bcrypt.compare(oldPassword, employee.password);
+        if (!isMatch) {
+            return res.status(400).json({ msg: "Old password is incorrect" });
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        employee.password = hashedPassword;
+        await employee.save();
+        res.status(200).json({ msg: "Password changed successfully" });
+    } catch (error) {
+        res.status(500).json({ msg: "Error changing password", error: error.message });
+    }
+}
+
+const fetchEmployerImages = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 0;
+        const limit = 10;
+
+        const employersImages = await Employer.find({
+            profileImage: { $exists: true, $ne: "" }, 
+        })
+            .select("profileImage")
+            .sort({ createdAt: -1 })
+            .skip(page * limit)
+            .limit(limit);
+
+        res.status(200).json({
+            msg: "Employer images fetched successfully",
+            images: employersImages,
+            hasMore: employersImages.length === limit, 
+        });
+    } catch (error) {
+        res.status(500).json({ msg: "Error fetching employer images", error: error.message });
     }
 };
 
@@ -397,68 +486,9 @@ const editEmployeeDetails = async (req, res) => {
     }
 };
 
-const resetPasswordRequest = async (req, res) => {
-    const { email } = req.body;
-    try {
-        const employee = await Employee.findOne({ email });
-        if (!employee) {
-            return res.status(404).json({ msg: "Employee not found" });
-        }
-        const otp = generateOTP();
-        const otpExpires = Date.now() + 10 * 60 * 1000;
-        employee.otp = otp;
-        employee.otpExpires = otpExpires;
-        await employee.save();
-        await sendEmail(email, "Password Reset OTP", `Your OTP for password reset is ${otp}. It is valid for 10 minutes.`);
-        res.status(200).json({ msg: "OTP sent for password reset", userId: employee._id });
-    }
-    catch (error) {
-        res.status(500).json({ msg: "Error sending OTP for password reset", error: error.message });
-    }
-}
 
-const resetPassword = async (req, res) => {
-    const { id, otp, newPassword } = req.body;
-    try {
-        const employee = await Employee.findOne({ email });
-        if (!employee) {
-            return res.status(404).json({ msg: "Employee not found" });
-        }
-        if (employee.otp !== otp || employee.otpExpires < Date.now()) {
-            return res.status(400).json({ msg: "Invalid or expired OTP" });
-        }
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
-        employee.password = hashedPassword;
-        employee.otp = null; // Clear OTP
-        employee.otpExpires = null;
-        await employee.save();
-        res.status(200).json({ msg: "Password reset successfully" });
-    } catch (error) {
-        res.status(500).json({ msg: "Error resetting password", error: error.message });
-    }
-}
 
-const changePassword = async (req, res) => {
-    const { oldPassword, newPassword } = req.body;
-    const employeeId = req.user.id;
-    try {
-        const employee = await Employee.findById(employeeId);
-        if (!employee) {
-            return res.status(404).json({ msg: "Employee not found" });
-        }
-        const isMatch = await bcrypt.compare(oldPassword, employee.password);
-        if (!isMatch) {
-            return res.status(400).json({ msg: "Old password is incorrect" });
-        }
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
-        employee.password = hashedPassword;
-        await employee.save();
-        res.status(200).json({ msg: "Password changed successfully" });
-    } catch (error) {
-        res.status(500).json({ msg: "Error changing password", error: error.message });
-    }
-}
-
-module.exports = { editEmployeeDetails, employeeSignup, getSavedJobs, employeeLogin, fetchJobs, fetchCompanies, fetchoneJOb, fetchoneCompany, applyJob, toggleSaveJob, fetchmydetails, toggleFollowCompany, verifyOTP, resetPasswordRequest, resetPassword, changePassword };
+module.exports = {
+    editEmployeeDetails, employeeSignup, getSavedJobs, employeeLogin, fetchJobs, fetchCompanies, fetchoneJOb, fetchoneCompany, applyJob, toggleSaveJob, fetchmydetails, toggleFollowCompany, verifyOTP, resetPasswordRequest, resetPassword,
+    fetchEmployerImages, changePassword
+};

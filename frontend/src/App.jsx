@@ -12,10 +12,11 @@ import Login from "./Verification/Login.jsx";
 import FindOneJob from './Pages/Employee/FindOneJob.jsx';
 import FindOneComapny from './Pages/Employee/FindOneComapny.jsx';
 import EmployeeDashboard from './Pages/Employee/EmployeeDashboard.jsx';
+import AuthForm from './Verification/AuthForm.jsx';
 
 function Layout({ role, children }) {
   const location = useLocation();
-  const hideNavbarFooter = ["/signup", "/login"].includes(location.pathname);
+  const hideNavbarFooter = ["/authform"].includes(location.pathname);
 
   return (
     <>
@@ -48,8 +49,9 @@ function App() {
             {!token && (
               <>
                 <Route path="/" element={<PreHome />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/login" element={<Login />} />
+                {/* <Route path="/signup" element={<Signup />} />
+                <Route path="/login" element={<Login />} /> */}
+                <Route path='/authform' element={<AuthForm />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </>
             )}

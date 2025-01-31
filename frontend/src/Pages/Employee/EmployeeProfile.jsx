@@ -450,6 +450,7 @@ const EmployeeProfile = () => {
                             type="date"
                             placeholder="Start Date"
                             value={new Date(exp.startDate).toISOString().split('T')[0]}
+                            // value={exp.startDate.split('T')[0]}
                             onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)}
                             disabled={!isEditing}
                         />
@@ -457,6 +458,7 @@ const EmployeeProfile = () => {
                             type="date"
                             placeholder="End Date"
                             value={new Date(exp.endDate).toISOString().split('T')[0]}
+                            // value={exp.endDate.split('T')[0]}
                             onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)}
                             disabled={!isEditing}
                         />
@@ -514,14 +516,16 @@ const EmployeeProfile = () => {
                         <input
                             type="date"
                             placeholder="Start Date"
-                            value={new Date(edu.startDate).toISOString().split('T')[0]}
+                            // value={new Date(edu.startDate).toISOString().split('T')[0]}
+                            value={edu.startDate.split('T')[0]}
                             onChange={(e) => handleEducationChange(index, 'startDate', e.target.value)}
                             disabled={!isEditing}
                         />
                         <input
                             type="date"
                             placeholder="End Date"
-                            value={new Date(edu.endDate).toISOString().split('T')[0]}
+                            // value={new Date(edu.endDate).toISOString().split('T')[0]}
+                            value={edu.endDate.split('T')[0]}
                             onChange={(e) => handleEducationChange(index, 'endDate', e.target.value)}
                             disabled={!isEditing}
                         />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import "../Styles/Navbar.scss";
 import logobg from "../assets/logobg.png";
 import { getTokenAndRole } from "../utils/authUtils";
@@ -8,6 +8,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { token, role } = getTokenAndRole();
   const navigate = useNavigate();
+  const location = useLocation(); 
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -29,10 +30,12 @@ const Navbar = () => {
     { path: "/companies", label: "Companies" },
     { path: "/dashboard/profile", label: "My Profile" },
     { path: "/dashboard/saved-jobs", label: "Saved Jobs" },
-    { path: "/dashboard/change-password", label: "Change Password" },
     { path: "/dashboard/cvbuilder", label: "Cv Builder" },
     { path: "#", label: "Logout", onclick: handleLogout },
   ];
+
+  // Helper function to determine if the link is active
+  const isActive = (path) => location.pathname === path ? 'active' : '';
 
   return (
     <div className="navbar">
@@ -46,14 +49,19 @@ const Navbar = () => {
 
       <div className={`nav-links ${role === 'employee' ? 'visible' : 'hidden'}`}>
         {employeeLinks.slice(0, 3).map((link) => (
-          <Link key={link.path} to={link.path}>{link.label}</Link>
+          <Link 
+            key={link.path} 
+            to={link.path} 
+            className={isActive(link.path)} // Add active class if the link is active
+          >
+            {link.label}
+          </Link>
         ))}
       </div>
 
       {!token && (
         <div className="nav-auth">
-          <Link to="/login">Login</Link>
-          <Link to="/#prehome-register" onClick={handleregisterclick}>Register</Link>
+          <Link to="/authform">Signup/Login</Link>
         </div>
       )}
 
@@ -62,20 +70,18 @@ const Navbar = () => {
           <div className="avatar" onClick={() => setMenuOpen(!menuOpen)}>
             <img src="avatar.png" alt="User Avatar" />
           </div>
-          {menuOpen && (
-            <div className="dropdown-menu">
-              {employeeLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.path}
-                  className="dropdown-item"
-                  onClick={link.onclick || (() => setMenuOpen(false))}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          )}
+          <div className={`dropdown-menu ${menuOpen ? 'visible' : ''}`}>
+            {employeeLinks.map((link, index) => (
+              <Link
+                key={index}
+                to={link.path}
+                className="dropdown-item"
+                onClick={link.onclick || (() => setMenuOpen(false))}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>

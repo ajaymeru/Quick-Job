@@ -38,6 +38,7 @@ const employerSignup = async (req, res) => {
     await newEmployer.save();
 
     await sendEmail(email, "Your OTP Code", `Your OTP is ${otp}. It is valid for 10 minutes.`);
+    console.log(email, otp)
 
     const token = jwt.sign({ id: newEmployer._id, role: newEmployer.role }, process.env.SECRET_KEY, { expiresIn: "100h" });
 
@@ -72,6 +73,7 @@ const employerLogin = async (req, res) => {
 
       await employer.save();
       await sendEmail(email, "Your OTP Code", `Your OTP is ${otp}. It is valid for 10 minutes.`);
+      console.log(email, otp)
 
       return res.status(200).json({
         msg: "OTP sent to your email. Please verify to proceed.",
@@ -138,6 +140,49 @@ const verifyOTP = async (req, res) => {
     res.status(500).json({ msg: "Error verifying OTP", error: error.message });
   }
 };
+
+const resetPasswordRequest = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const employer = await Employer.findOne({ email });
+        if (!employer) {
+            return res.status(404).json({ msg: "Employer not found" });
+        }
+        const otp = generateOTP();
+        const otpExpires = Date.now() + 10 * 60 * 1000;
+        employer.otp = otp;
+        employer.otpExpires = otpExpires;
+        await employer.save();
+        await sendEmail(email, "Password Reset OTP", `Your OTP for password reset is ${otp}. It is valid for 10 minutes.`);
+        console.log(email, otp)
+        res.status(200).json({ msg: "OTP sent for password reset", userId: employer._id });
+    }
+    catch (error) {
+        res.status(500).json({ msg: "Error sending OTP for password reset", error: error.message });
+    }
+}
+
+const resetPassword = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+    try {
+        const employer = await Employer.findOne({ email });
+        if (!employer) {
+            return res.status(404).json({ msg: "Employer not found" });
+        }
+        if (employer.otp !== otp || employer.otpExpires < Date.now()) {
+            return res.status(400).json({ msg: "Invalid or expired OTP" });
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        employer.password = hashedPassword;
+        employer.otp = null; // Clear OTP
+        employer.otpExpires = null;
+        await employer.save();
+        res.status(200).json({ msg: "Password reset successfully" });
+    } catch (error) {
+        res.status(500).json({ msg: "Error resetting password", error: error.message });
+    }
+}
 
 const fetchmydetails = async (req, res) => {
   try {
@@ -482,7 +527,6 @@ const statistics = async (req, res) => {
   }
 };
 
-
 const fetchEmployeesWithPagination = async (req, res) => {
   try {
     // Get filter and pagination parameters from query
@@ -592,5 +636,6 @@ const updateApplicantStatus = async (req, res) => {
 module.exports = {
   employerSignup, employerLogin, postJob, fetchmydetails,
   editEmployerDetails, fetchMyJobs, fetchapplicationsbyjob, deleteJob,
-  editJob, fetchSingleJob, statistics, fetchApplicantById, fetchEmployeesWithPagination, verifyOTP, updateApplicantStatus
+  editJob, fetchSingleJob, statistics, fetchApplicantById, fetchEmployeesWithPagination, verifyOTP, 
+  updateApplicantStatus, resetPasswordRequest, resetPassword,
 };

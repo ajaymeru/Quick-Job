@@ -1,6 +1,7 @@
 const express = require("express")
 const { employerSignup, employerLogin, postJob, fetchmydetails, editEmployerDetails,
-  fetchMyJobs, fetchapplicationsbyjob, deleteJob, editJob, fetchSingleJob, statistics, fetchApplicantById, fetchEmployeesWithPagination, verifyOTP, updateApplicantStatus } = require("../controller/EmployerController")
+  fetchMyJobs, fetchapplicationsbyjob, deleteJob, editJob, fetchSingleJob, statistics, fetchApplicantById, fetchEmployeesWithPagination, verifyOTP, 
+  resetPassword, resetPasswordRequest, updateApplicantStatus } = require("../controller/EmployerController")
 const { authenticateUser, authorizeRole } = require("../middleware/middleware");
 const createStorage = require("../cloudinaryConfig")
 const multer = require("multer");
@@ -19,6 +20,8 @@ router.post("/signup", employerSignup)
 router.post("/login", employerLogin)
 router.post("/verify-otp", verifyOTP)
 
+router.post("/reset-password-request", resetPasswordRequest);
+router.post("/reset-password", resetPassword);
 
 router.post("/post", authenticateUser, authorizeRole("Employer"), postJob)
 router.get("/fetchmydetails", authenticateUser, authorizeRole("Employer"), fetchmydetails)
